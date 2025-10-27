@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import type { FieldMapper, SensorData, BehaviorData } from '@/types/api'
+import { colorConfig } from '@/config/colors'
+import LineChart from './LineChart.vue'
 
 interface Props {
   title: string
@@ -25,6 +27,8 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const sortField = ref('id')
 const sortDesc = ref(false)
+const viewMode = ref<'table' | 'chart'>('table')
+const selectedChartField = ref<string>('')
 
 // Compute visible columns from mapper
 const visibleColumns = computed(() => {
@@ -140,6 +144,19 @@ watch(pageSize, () => {
   currentPage.value = 1
   loadData()
 })
+
+// Initialize selected chart field
+watch(visibleColumns, (newColumns) => {
+  if (newColumns.length > 0 && !selectedChartField.value) {
+    selectedChartField.value = newColumns[0].db_name
+  }
+}, { immediate: true })
+
+// Compute chart field label
+const selectedChartFieldLabel = computed(() => {
+  const field = visibleColumns.value.find(f => f.db_name === selectedChartField.value)
+  return field ? field.f_name + (field.unit ? ` (${field.unit})` : '') : ''
+})
 </script>
 
 <template>
@@ -147,7 +164,21 @@ watch(pageSize, () => {
     <div class="table-header">
       <h2>{{ title }}</h2>
       <div class="controls">
-        <label>
+        <div class="view-toggle">
+          <button
+            :class="{ active: viewMode === 'table' }"
+            @click="viewMode = 'table'"
+          >
+            📋 表格视图
+          </button>
+          <button
+            :class="{ active: viewMode === 'chart' }"
+            @click="viewMode = 'chart'"
+          >
+            📈 图表视图
+          </button>
+        </div>
+        <label v-if="viewMode === 'table'">
           每页显示:
           <select :value="pageSize" @change="changePageSize(Number(($event.target as HTMLSelectElement).value))">
             <option value="5">5</option>
@@ -157,12 +188,30 @@ watch(pageSize, () => {
             <option value="100">100</option>
           </select>
         </label>
+        <label v-if="viewMode === 'chart' && visibleColumns.length > 0">
+          选择字段:
+          <select v-model="selectedChartField">
+            <option v-for="field in visibleColumns" :key="field.db_name" :value="field.db_name">
+              {{ field.f_name }}
+            </option>
+          </select>
+        </label>
       </div>
     </div>
 
     <div v-if="error" class="error">{{ error }}</div>
 
     <div v-if="loading" class="loading">加载中...</div>
+
+    <div v-else-if="viewMode === 'chart'" class="chart-container">
+      <LineChart
+        v-if="data.length > 0 && selectedChartField"
+        :data="data"
+        :field-key="selectedChartField"
+        :field-label="selectedChartFieldLabel"
+      />
+      <div v-else class="no-data">暂无数据</div>
+    </div>
 
     <div v-else class="table-container">
       <table>
@@ -182,7 +231,7 @@ watch(pageSize, () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="row in data" :key="row.id">
+          <tr v-for="(row, index) in data" :key="row.id" :class="{ even: index % 2 === 0, odd: index % 2 === 1 }">
             <td v-for="header in headers" :key="header.key">
               {{ getCellValue(row, header.key) }}
             </td>
@@ -191,13 +240,13 @@ watch(pageSize, () => {
       </table>
     </div>
 
-    <div class="pagination">
+    <div v-if="viewMode === 'table'" class="pagination">
       <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
       <span class="page-info">第 {{ currentPage }} 页</span>
       <button @click="nextPage" :disabled="!hasNextPage">下一页</button>
     </div>
 
-    <div class="stats">
+    <div v-if="viewMode === 'table'" class="stats">
       共显示 {{ data.length }} 条记录 | 排序字段: {{ sortField }} {{ sortDesc ? '降序' : '升序' }}
     </div>
   </div>
@@ -228,6 +277,35 @@ watch(pageSize, () => {
   display: flex;
   gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  background: #f5f5f5;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.view-toggle button {
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.view-toggle button:hover {
+  background: rgba(25, 118, 210, 0.1);
+}
+
+.view-toggle button.active {
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: #1976d2;
 }
 
 .controls label {
@@ -263,6 +341,19 @@ watch(pageSize, () => {
   margin-bottom: 16px;
 }
 
+.chart-container {
+  margin-bottom: 16px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -270,11 +361,11 @@ table {
 }
 
 th {
-  background: #f5f5f5;
+  background: v-bind('colorConfig.tableHeaderBg');
   padding: 12px 8px;
   text-align: left;
   font-weight: 600;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid v-bind('colorConfig.tableBorder');
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
@@ -299,8 +390,16 @@ td {
   border-bottom: 1px solid #eee;
 }
 
+tbody tr.even {
+  background: v-bind('colorConfig.tableRowEven');
+}
+
+tbody tr.odd {
+  background: v-bind('colorConfig.tableRowOdd');
+}
+
 tbody tr:hover {
-  background: #f9f9f9;
+  background: v-bind('colorConfig.tableRowHover');
 }
 
 .pagination {

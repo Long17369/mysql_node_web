@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import DataTable from './components/DataTable.vue'
+import ColorSettings from './components/ColorSettings.vue'
 import { getSensorFieldMapper, getSensorData, getBehaviorFieldMapper, getBehaviorData } from './services/api'
 
 const activeTab = ref<'sensor' | 'behavior'>('sensor')
@@ -8,6 +9,8 @@ const activeTab = ref<'sensor' | 'behavior'>('sensor')
 
 <template>
   <div class="app">
+    <ColorSettings />
+    
     <header>
       <h1>数据监控系统</h1>
       <p>传感器数据与行为数据展示</p>
