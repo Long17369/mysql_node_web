@@ -24,9 +24,7 @@ function handleReset() {
 
 <template>
   <div class="color-settings">
-    <button class="settings-toggle" @click="toggleSettings" title="颜色设置">
-      🎨 颜色配置
-    </button>
+    <button class="settings-toggle" @click="toggleSettings" title="颜色设置">🎨 颜色配置</button>
 
     <div v-if="showSettings" class="settings-panel">
       <div class="settings-header">

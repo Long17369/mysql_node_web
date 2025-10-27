@@ -11,7 +11,7 @@ import {
   Tooltip,
   Legend,
   type ChartData,
-  type ChartOptions
+  type ChartOptions,
 } from 'chart.js'
 import type { SensorData, BehaviorData } from '@/types/api'
 import { colorConfig } from '@/config/colors'
@@ -51,9 +51,9 @@ const chartData = computed<ChartData<'line'>>(() => {
         tension: 0.4,
         fill: true,
         pointRadius: 4,
-        pointHoverRadius: 6
-      }
-    ]
+        pointHoverRadius: 6,
+      },
+    ],
   }
 })
 
@@ -64,31 +64,31 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
   plugins: {
     legend: {
       display: true,
-      position: 'top'
+      position: 'top',
     },
     tooltip: {
       mode: 'index',
-      intersect: false
-    }
+      intersect: false,
+    },
   },
   scales: {
     y: {
       beginAtZero: true,
       grid: {
-        color: 'rgba(0, 0, 0, 0.05)'
-      }
+        color: 'rgba(0, 0, 0, 0.05)',
+      },
     },
     x: {
       grid: {
-        color: 'rgba(0, 0, 0, 0.05)'
-      }
-    }
+        color: 'rgba(0, 0, 0, 0.05)',
+      },
+    },
   },
   interaction: {
     mode: 'nearest',
     axis: 'x',
-    intersect: false
-  }
+    intersect: false,
+  },
 }))
 </script>
 

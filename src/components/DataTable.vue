@@ -39,17 +39,17 @@ const visibleColumns = computed(() => {
 const headers = computed(() => {
   const baseHeaders = [
     { key: 'id', label: 'ID' },
-    { key: 'd_no', label: '设备编号' }
+    { key: 'd_no', label: '设备编号' },
   ]
 
   const fieldHeaders = visibleColumns.value.map((field) => ({
     key: field.db_name,
-    label: field.f_name + (field.unit ? ` (${field.unit})` : '')
+    label: field.f_name + (field.unit ? ` (${field.unit})` : ''),
   }))
 
   const endHeaders = [
     { key: 'c_time', label: '更新时间' },
-    { key: 'online', label: '在线状态' }
+    { key: 'online', label: '在线状态' },
   ]
 
   return [...baseHeaders, ...fieldHeaders, ...endHeaders]
@@ -77,7 +77,7 @@ async function loadData() {
       limit: pageSize.value,
       offset: offset.value,
       order_table: sortField.value,
-      desc: sortDesc.value
+      desc: sortDesc.value,
     })
   } catch (e) {
     error.value = '加载数据失败: ' + (e as Error).message
@@ -146,15 +146,19 @@ watch(pageSize, () => {
 })
 
 // Initialize selected chart field
-watch(visibleColumns, (newColumns) => {
-  if (newColumns.length > 0 && !selectedChartField.value) {
-    selectedChartField.value = newColumns[0].db_name
-  }
-}, { immediate: true })
+watch(
+  visibleColumns,
+  (newColumns) => {
+    if (newColumns.length > 0 && !selectedChartField.value) {
+      selectedChartField.value = newColumns[0].db_name
+    }
+  },
+  { immediate: true },
+)
 
 // Compute chart field label
 const selectedChartFieldLabel = computed(() => {
-  const field = visibleColumns.value.find(f => f.db_name === selectedChartField.value)
+  const field = visibleColumns.value.find((f) => f.db_name === selectedChartField.value)
   return field ? field.f_name + (field.unit ? ` (${field.unit})` : '') : ''
 })
 </script>
@@ -165,22 +169,19 @@ const selectedChartFieldLabel = computed(() => {
       <h2>{{ title }}</h2>
       <div class="controls">
         <div class="view-toggle">
-          <button
-            :class="{ active: viewMode === 'table' }"
-            @click="viewMode = 'table'"
-          >
+          <button :class="{ active: viewMode === 'table' }" @click="viewMode = 'table'">
             📋 表格视图
           </button>
-          <button
-            :class="{ active: viewMode === 'chart' }"
-            @click="viewMode = 'chart'"
-          >
+          <button :class="{ active: viewMode === 'chart' }" @click="viewMode = 'chart'">
             📈 图表视图
           </button>
         </div>
         <label v-if="viewMode === 'table'">
           每页显示:
-          <select :value="pageSize" @change="changePageSize(Number(($event.target as HTMLSelectElement).value))">
+          <select
+            :value="pageSize"
+            @change="changePageSize(Number(($event.target as HTMLSelectElement).value))"
+          >
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>
@@ -231,7 +232,11 @@ const selectedChartFieldLabel = computed(() => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, index) in data" :key="row.id" :class="{ even: index % 2 === 0, odd: index % 2 === 1 }">
+          <tr
+            v-for="(row, index) in data"
+            :key="row.id"
+            :class="{ even: index % 2 === 0, odd: index % 2 === 1 }"
+          >
             <td v-for="header in headers" :key="header.key">
               {{ getCellValue(row, header.key) }}
             </td>

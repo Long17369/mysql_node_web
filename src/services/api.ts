@@ -3,7 +3,7 @@ import type {
   SensorData,
   BehaviorData,
   DataQueryParams,
-  ApiResponse
+  ApiResponse,
 } from '@/types/api'
 
 const BASE_URL = '/api'
@@ -30,7 +30,7 @@ export async function getSensorData(params: DataQueryParams = {}): Promise<Senso
     limit: limit.toString(),
     offset: offset.toString(),
     order_table,
-    desc: desc.toString()
+    desc: desc.toString(),
   })
   return fetchApi<SensorData[]>(`${BASE_URL}/sensor/data?${queryString}`)
 }
@@ -46,7 +46,7 @@ export async function getBehaviorData(params: DataQueryParams = {}): Promise<Beh
     limit: limit.toString(),
     offset: offset.toString(),
     order_table,
-    desc: desc.toString()
+    desc: desc.toString(),
   })
   return fetchApi<BehaviorData[]>(`${BASE_URL}/behavior/data?${queryString}`)
 }

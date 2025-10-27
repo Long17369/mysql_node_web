@@ -21,7 +21,7 @@ export const defaultColors: ColorConfig = {
   tableRowHover: '#e3f2fd',
   tableBorder: '#ddd',
   textPrimary: '#333',
-  textSecondary: '#666'
+  textSecondary: '#666',
 }
 
 // Create a reactive color configuration
