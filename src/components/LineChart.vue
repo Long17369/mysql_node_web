@@ -34,9 +34,9 @@ const chartData = computed<ChartData<'line'>>(() => {
     return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
   })
 
-  const rowRecord = props.data as unknown as Record<string, unknown>[]
-  const values = rowRecord.map((row) => {
-    const value = row[props.fieldKey]
+  const values = props.data.map((row) => {
+    const rowData = row as unknown as Record<string, unknown>
+    const value = rowData[props.fieldKey]
     return value !== null && value !== undefined ? parseFloat(String(value)) : null
   })
 
@@ -47,7 +47,7 @@ const chartData = computed<ChartData<'line'>>(() => {
         label: props.fieldLabel,
         data: values,
         borderColor: colorConfig.primary,
-        backgroundColor: colorConfig.primary + '20',
+        backgroundColor: `${colorConfig.primary}33`,
         tension: 0.4,
         fill: true,
         pointRadius: 4,

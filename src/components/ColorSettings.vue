@@ -10,7 +10,11 @@ function toggleSettings() {
 
 function handleColorChange(key: keyof typeof colorConfig, event: Event) {
   const target = event.target as HTMLInputElement
-  updateColorConfig({ [key]: target.value })
+  const value = target.value
+  // Validate hex color format
+  if (/^#[0-9A-F]{6}$/i.test(value)) {
+    updateColorConfig({ [key]: value })
+  }
 }
 
 function handleReset() {
