@@ -7,6 +7,7 @@
 <script lang="ts">
 import { defineComponent, type PropType, computed } from 'vue'
 import { Line as LineChart } from 'vue-chartjs'
+import type { ChartData } from '../types'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -19,16 +20,6 @@ import {
 } from 'chart.js'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
-
-interface ChartData {
-  labels: string[]
-  datasets: {
-    label: string
-    data: number[]
-    borderColor?: string
-    backgroundColor?: string
-  }[]
-}
 
 export default defineComponent({
   name: 'LineChartComponent',

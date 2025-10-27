@@ -12,7 +12,8 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
 import DataTable from '../components/DataTable.vue'
-import api, { type TableData } from '../services/api'
+import api from '../services/api'
+import type { TableData } from '../types'
 
 export default defineComponent({
   name: 'ProductsView',
@@ -31,7 +32,7 @@ export default defineComponent({
         products.value = await api.getProducts()
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : '加载数据失败'
-        error.value = errorMessage
+        console.warn('API unavailable, using mock data:', errorMessage)
         // Mock data for demonstration when API is not available
         products.value = [
           { id: 1, name: '笔记本电脑', price: 5999, stock: 50, category: '电子产品' },
@@ -40,7 +41,7 @@ export default defineComponent({
           { id: 4, name: '显示器', price: 1899, stock: 30, category: '电子产品' },
           { id: 5, name: '耳机', price: 299, stock: 120, category: '音频设备' },
         ]
-        error.value = undefined // Clear error when using mock data
+        error.value = '⚠️ API不可用，显示示例数据'
       } finally {
         loading.value = false
       }

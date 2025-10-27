@@ -41,7 +41,8 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
 import LineChart from '../components/LineChart.vue'
-import api, { type ChartData } from '../services/api'
+import api from '../services/api'
+import type { ChartData } from '../types'
 
 export default defineComponent({
   name: 'StatisticsView',
@@ -51,7 +52,6 @@ export default defineComponent({
   setup() {
     const loading = ref(false)
     const error = ref<string | undefined>(undefined)
-    const statistics = ref<Record<string, unknown> | null>(null)
 
     const salesData = ref<ChartData>({
       labels: [],
@@ -77,18 +77,17 @@ export default defineComponent({
       error.value = undefined
       try {
         const data = await api.getStatistics()
-        statistics.value = data
         
-        // Process data for charts
-        salesData.value = data.salesData as ChartData
-        ordersData.value = data.ordersData as ChartData
-        usersData.value = data.usersData as ChartData
-        totalUsers.value = data.totalUsers as number
-        totalOrders.value = data.totalOrders as number
-        totalSales.value = data.totalSales as number
+        // Process data for charts - data is now properly typed
+        salesData.value = data.salesData
+        ordersData.value = data.ordersData
+        usersData.value = data.usersData
+        totalUsers.value = data.totalUsers
+        totalOrders.value = data.totalOrders
+        totalSales.value = data.totalSales
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : '加载数据失败'
-        error.value = errorMessage
+        console.warn('API unavailable, using mock data:', errorMessage)
         
         // Mock data for demonstration when API is not available
         const days = ['10-20', '10-21', '10-22', '10-23', '10-24', '10-25', '10-26']
@@ -127,7 +126,7 @@ export default defineComponent({
         totalOrders.value = 3856
         totalSales.value = 458392
         
-        error.value = undefined // Clear error when using mock data
+        error.value = '⚠️ API不可用，显示示例数据'
       } finally {
         loading.value = false
       }

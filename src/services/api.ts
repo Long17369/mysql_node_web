@@ -1,4 +1,5 @@
 import axios from 'axios'
+import type { TableData, StatisticsResponse } from '../types'
 
 const apiClient = axios.create({
   baseURL: '/api',
@@ -6,21 +7,6 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 })
-
-export interface TableData {
-  id: number
-  [key: string]: string | number | boolean | null | undefined
-}
-
-export interface ChartData {
-  labels: string[]
-  datasets: {
-    label: string
-    data: number[]
-    borderColor?: string
-    backgroundColor?: string
-  }[]
-}
 
 export const api = {
   // Users
@@ -42,7 +28,7 @@ export const api = {
   },
 
   // Statistics
-  getStatistics: async (): Promise<Record<string, unknown>> => {
+  getStatistics: async (): Promise<StatisticsResponse> => {
     const response = await apiClient.get('/statistics')
     return response.data
   },

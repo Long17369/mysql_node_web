@@ -22,10 +22,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-
-interface TableData {
-  [key: string]: string | number | boolean | null | undefined
-}
+import type { TableData } from '../types'
 
 export default defineComponent({
   name: 'DataTable',
