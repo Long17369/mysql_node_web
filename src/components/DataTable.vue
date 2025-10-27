@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import type { FieldMapper, SensorData, BehaviorData } from '@/types/api'
+import type {
+  FieldMapper,
+  SensorData,
+  BehaviorData,
+  SensorDevice,
+  BehaviorDevice,
+} from '@/types/api'
 import { colorConfig } from '@/config/colors'
 import LineChart from './LineChart.vue'
 
@@ -12,13 +18,16 @@ interface Props {
     offset: number
     order_table: string
     desc: boolean
+    where: object
   }) => Promise<(SensorData | BehaviorData)[]>
+  fetchDevice: () => Promise<(SensorDevice | BehaviorDevice)[]>
 }
 
 const props = defineProps<Props>()
 
 const mapper = ref<FieldMapper[]>([])
 const data = ref<(SensorData | BehaviorData)[]>([])
+const device = ref<(SensorDevice | BehaviorDevice)[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
@@ -28,6 +37,7 @@ const pageSize = ref(10)
 const sortField = ref('id')
 const sortDesc = ref(false)
 const viewMode = ref<'table' | 'chart'>('table')
+const whereDoNo = ref<string | undefined>(undefined)
 const selectedChartField = ref<string>('')
 
 // Compute visible columns from mapper
@@ -78,11 +88,20 @@ async function loadData() {
       offset: offset.value,
       order_table: sortField.value,
       desc: sortDesc.value,
+      where: { d_no: whereDoNo.value },
     })
   } catch (e) {
     error.value = '加载数据失败: ' + (e as Error).message
   } finally {
     loading.value = false
+  }
+}
+
+async function loadDevice() {
+  try {
+    device.value = await props.fetchDevice()
+  } catch (e) {
+    error.value = '加载设备列表失败: ' + (e as Error).message
   }
 }
 
@@ -137,11 +156,16 @@ function getCellValue(row: SensorData | BehaviorData, key: string) {
 onMounted(async () => {
   await loadMapper()
   await loadData()
+  await loadDevice()
 })
 
 // Watch page size changes
 watch(pageSize, () => {
   currentPage.value = 1
+  loadData()
+})
+
+watch(whereDoNo, () => {
   loadData()
 })
 
@@ -170,10 +194,10 @@ const selectedChartFieldLabel = computed(() => {
       <div class="controls">
         <div class="view-toggle">
           <button :class="{ active: viewMode === 'table' }" @click="viewMode = 'table'">
-            📋 表格视图
+            表格视图
           </button>
           <button :class="{ active: viewMode === 'chart' }" @click="viewMode = 'chart'">
-            📈 图表视图
+            图表视图
           </button>
         </div>
         <label v-if="viewMode === 'table'">
@@ -194,6 +218,15 @@ const selectedChartFieldLabel = computed(() => {
           <select v-model="selectedChartField">
             <option v-for="field in visibleColumns" :key="field.db_name" :value="field.db_name">
               {{ field.f_name }}
+            </option>
+          </select>
+        </label>
+        <label>
+          选择设备:
+          <select v-model="whereDoNo">
+            <option :value="undefined">全部</option>
+            <option v-for="field in device" :key="field.d_no" :value="field.d_no">
+              {{ field.d_no }}
             </option>
           </select>
         </label>

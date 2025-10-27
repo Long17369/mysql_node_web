@@ -2,6 +2,8 @@ import type {
   FieldMapper,
   SensorData,
   BehaviorData,
+  SensorDevice,
+  BehaviorDevice,
   DataQueryParams,
   ApiResponse,
 } from '@/types/api'
@@ -25,12 +27,13 @@ export async function getSensorFieldMapper(): Promise<FieldMapper[]> {
 }
 
 export async function getSensorData(params: DataQueryParams = {}): Promise<SensorData[]> {
-  const { limit = 10, offset = 0, order_table = 'id', desc = false } = params
+  const { limit = 10, offset = 0, order_table = 'id', desc = false, where = {} } = params
   const queryString = new URLSearchParams({
     limit: limit.toString(),
     offset: offset.toString(),
     order_table,
     desc: desc.toString(),
+    where: JSON.stringify(where),
   })
   return fetchApi<SensorData[]>(`${BASE_URL}/sensor/data?${queryString}`)
 }
@@ -41,12 +44,21 @@ export async function getBehaviorFieldMapper(): Promise<FieldMapper[]> {
 }
 
 export async function getBehaviorData(params: DataQueryParams = {}): Promise<BehaviorData[]> {
-  const { limit = 10, offset = 0, order_table = 'id', desc = false } = params
+  const { limit = 10, offset = 0, order_table = 'id', desc = false, where = {} } = params
   const queryString = new URLSearchParams({
     limit: limit.toString(),
     offset: offset.toString(),
     order_table,
     desc: desc.toString(),
+    where: JSON.stringify(where),
   })
   return fetchApi<BehaviorData[]>(`${BASE_URL}/behavior/data?${queryString}`)
+}
+
+export async function getSensorDevice() {
+  return fetchApi<SensorDevice[]>(`${BASE_URL}/behavior/device`)
+}
+
+export async function getBehaviorDevice() {
+  return fetchApi<BehaviorDevice[]>(`${BASE_URL}/sensor/device`)
 }

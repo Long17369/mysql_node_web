@@ -16,7 +16,7 @@ import {
 import type { SensorData, BehaviorData } from '@/types/api'
 import { colorConfig } from '@/config/colors'
 
-// Register Chart.js components
+// Chart.js 组件
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 interface Props {
@@ -27,7 +27,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// Compute chart data
+// 图标数据
 const chartData = computed<ChartData<'line'>>(() => {
   const labels = props.data.map((row) => {
     const date = new Date(row.c_time)

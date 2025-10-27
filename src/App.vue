@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import DataTable from './components/DataTable.vue'
-import ColorSettings from './components/ColorSettings.vue'
 import {
   getSensorFieldMapper,
   getSensorData,
   getBehaviorFieldMapper,
   getBehaviorData,
+  getSensorDevice,
+  getBehaviorDevice,
 } from './services/api'
 
 const activeTab = ref<'sensor' | 'behavior'>('sensor')
@@ -14,8 +15,6 @@ const activeTab = ref<'sensor' | 'behavior'>('sensor')
 
 <template>
   <div class="app">
-    <ColorSettings />
-
     <header>
       <h1>数据监控系统</h1>
       <p>传感器数据与行为数据展示</p>
@@ -36,6 +35,7 @@ const activeTab = ref<'sensor' | 'behavior'>('sensor')
         title="传感器数据表"
         :fetch-mapper="getSensorFieldMapper"
         :fetch-data="getSensorData"
+        :fetch-device="getSensorDevice"
       />
 
       <DataTable
@@ -43,6 +43,7 @@ const activeTab = ref<'sensor' | 'behavior'>('sensor')
         title="行为数据表"
         :fetch-mapper="getBehaviorFieldMapper"
         :fetch-data="getBehaviorData"
+        :fetch-device="getBehaviorDevice"
       />
     </main>
   </div>
@@ -51,7 +52,7 @@ const activeTab = ref<'sensor' | 'behavior'>('sensor')
 <style scoped>
 .app {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #31b1af 0%, #2d9c91 100%);
   padding: 20px;
 }
 
