@@ -28,3 +28,6 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+# Mock server for testing (not part of the actual project)
+mock-server/
