@@ -6,7 +6,7 @@
     </div>
 
     <div v-if="loading" class="loading">加载中...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-else-if="error" class="error" :class="{ 'warning': error.includes('⚠️') }">{{ error }}</div>
     <div v-else class="charts-container">
       <div class="chart-wrapper">
         <LineChart :data="salesData" title="每日销售额趋势" />
@@ -195,6 +195,14 @@ h1 {
 
 .error {
   color: #d32f2f;
+}
+
+.warning {
+  color: #f57c00;
+  background: #fff3e0;
+  padding: 12px;
+  border-radius: 4px;
+  border-left: 4px solid #f57c00;
 }
 
 .charts-container {
