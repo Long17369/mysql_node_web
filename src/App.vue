@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import DataTable from './components/DataTable.vue'
-import { getSensorFieldMapper, getSensorData, getBehaviorFieldMapper, getBehaviorData } from './services/api'
+import {
+  getSensorFieldMapper,
+  getSensorData,
+  getBehaviorFieldMapper,
+  getBehaviorData,
+  getSensorDevice,
+  getBehaviorDevice,
+} from './services/api'
 
 const activeTab = ref<'sensor' | 'behavior'>('sensor')
 </script>
@@ -14,17 +21,11 @@ const activeTab = ref<'sensor' | 'behavior'>('sensor')
     </header>
 
     <div class="tabs">
-      <button
-        :class="{ active: activeTab === 'sensor' }"
-        @click="activeTab = 'sensor'"
-      >
-        📊 传感器数据
+      <button :class="{ active: activeTab === 'sensor' }" @click="activeTab = 'sensor'">
+        传感器数据
       </button>
-      <button
-        :class="{ active: activeTab === 'behavior' }"
-        @click="activeTab = 'behavior'"
-      >
-        📈 行为数据
+      <button :class="{ active: activeTab === 'behavior' }" @click="activeTab = 'behavior'">
+        行为数据
       </button>
     </div>
 
@@ -34,6 +35,7 @@ const activeTab = ref<'sensor' | 'behavior'>('sensor')
         title="传感器数据表"
         :fetch-mapper="getSensorFieldMapper"
         :fetch-data="getSensorData"
+        :fetch-device="getSensorDevice"
       />
 
       <DataTable
@@ -41,6 +43,7 @@ const activeTab = ref<'sensor' | 'behavior'>('sensor')
         title="行为数据表"
         :fetch-mapper="getBehaviorFieldMapper"
         :fetch-data="getBehaviorData"
+        :fetch-device="getBehaviorDevice"
       />
     </main>
   </div>
@@ -49,7 +52,7 @@ const activeTab = ref<'sensor' | 'behavior'>('sensor')
 <style scoped>
 .app {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #31b1af 0%, #2d9c91 100%);
   padding: 20px;
 }
 
@@ -115,7 +118,7 @@ main {
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 </style>
-
