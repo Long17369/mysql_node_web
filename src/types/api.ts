@@ -83,3 +83,5 @@ export type SensorMapperResponse = ApiResponse<FieldMapper[]>
 export type BehaviorMapperResponse = ApiResponse<FieldMapper[]>
 export type SensorDataResponse = ApiResponse<SensorData[]>
 export type BehaviorDataResponse = ApiResponse<BehaviorData[]>
+export type SensorDataCount = ApiResponse<number>
+export type BehaviorDataCount = ApiResponse<number>

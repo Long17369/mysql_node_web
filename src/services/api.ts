@@ -6,6 +6,8 @@ import type {
   BehaviorDevice,
   DataQueryParams,
   ApiResponse,
+  SensorDataCount,
+  BehaviorDataCount,
 } from '@/types/api'
 
 const BASE_URL = '/api'
@@ -53,6 +55,20 @@ export async function getBehaviorData(params: DataQueryParams = {}): Promise<Beh
     where: JSON.stringify(where),
   })
   return fetchApi<BehaviorData[]>(`${BASE_URL}/behavior/data?${queryString}`)
+}
+
+export async function getSensorDataCount(where: object) {
+  const queryString = new URLSearchParams({
+    where: JSON.stringify(where),
+  })
+  return fetchApi<SensorDataCount>(`${BASE_URL}/sensor/data?${queryString}`)
+}
+
+export async function getBehaviorDataCount(where: object) {
+  const queryString = new URLSearchParams({
+    where: JSON.stringify(where),
+  })
+  return fetchApi<BehaviorDataCount>(`${BASE_URL}/behavior/data?${queryString}`)
 }
 
 export async function getSensorDevice() {
