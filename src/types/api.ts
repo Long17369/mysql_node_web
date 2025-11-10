@@ -26,7 +26,7 @@ export interface FieldMapper {
 }
 
 // 传感器数据类型
-export interface SensorData {
+export interface Data {
   id: number
   d_no: string | null
   field1: string | null
@@ -43,29 +43,11 @@ export interface SensorData {
   online: string | null // "实时数据" | "保存数据"
 }
 
-// 行为数据类型
-export interface BehaviorData {
-  id: number
-  d_no: string | null
-  field1: string | null
-  field2: string | null
-  field3: string | null
-  field4: string | null
-  field5: string | null
-  field6: string | null
-  field7: string | null
-  field8: string | null
-  field9: string | null
-  field10: string | null
-  c_time: string // ISO 8601 格式
-  online: string | null // "实时数据" | "保存数据"
+export interface DataCount {
+  count: number
 }
 
-export interface SensorDevice {
-  d_no: string
-}
-
-export interface BehaviorDevice {
+export interface Device {
   d_no: string
 }
 
@@ -79,9 +61,6 @@ export interface DataQueryParams {
 }
 
 // API 响应类型
-export type SensorMapperResponse = ApiResponse<FieldMapper[]>
-export type BehaviorMapperResponse = ApiResponse<FieldMapper[]>
-export type SensorDataResponse = ApiResponse<SensorData[]>
-export type BehaviorDataResponse = ApiResponse<BehaviorData[]>
-export type SensorDataCount = ApiResponse<number>
-export type BehaviorDataCount = ApiResponse<number>
+export type MapperResponse = ApiResponse<FieldMapper[]>
+export type DataResponse = ApiResponse<Data[]>
+export type DataCountResponse = ApiResponse<number>

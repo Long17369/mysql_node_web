@@ -12,17 +12,18 @@ import {
   Legend,
   type ChartData,
   type ChartOptions,
+  type ChartDataset,
+  type Point,
 } from 'chart.js'
-import type { SensorData, BehaviorData } from '@/types/api'
+import type { Data, FieldMapper } from '@/types/api'
 import { colorConfig } from '@/config/colors'
 
 // Chart.js 组件
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 interface Props {
-  data: (SensorData | BehaviorData)[]
-  fieldKey: string
-  fieldLabel: string
+  mapper: FieldMapper[]
+  data: Data[]
 }
 
 const props = defineProps<Props>()
@@ -34,26 +35,30 @@ const chartData = computed<ChartData<'line'>>(() => {
     return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
   })
 
-  const values = props.data.map((row) => {
-    const rowData = row as unknown as Record<string, unknown>
-    const value = rowData[props.fieldKey]
-    return value !== null && value !== undefined ? parseFloat(String(value)) : null
+  const datasets: ChartDataset<'line', (number | Point | null)[]>[] = []
+  Object.entries(props.mapper).forEach((value) => {
+    const key = parseInt(value[0])
+    const map = value[1]
+    const data = {
+      label: map.f_name,
+      data: props.data.map((row) => {
+        const rowData = row as unknown as Record<string, unknown>
+        const value = rowData[map.db_name]
+        return value !== null && value !== undefined ? parseFloat(String(value)) : null
+      }),
+      borderColor: colorConfig.primary[key],
+      backgroundColor: `${colorConfig.primary[key]}33`,
+      tension: 0.4,
+      fill: true,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+    }
+    datasets.push(data)
   })
 
   return {
     labels,
-    datasets: [
-      {
-        label: props.fieldLabel,
-        data: values,
-        borderColor: colorConfig.primary,
-        backgroundColor: `${colorConfig.primary}33`,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-      },
-    ],
+    datasets: datasets,
   }
 })
 
@@ -100,7 +105,6 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
 
 <style scoped>
 .line-chart {
-  width: 100%;
   height: 300px;
   padding: 20px;
   background: white;

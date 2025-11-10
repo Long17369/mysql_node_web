@@ -18,7 +18,6 @@ const menuItems = ref<MenuItem[]>([
     title: '数据管理',
     submenuOpen: true,
     submenu: [
-      { title: '全部数据', value: 'all' },
       { title: '行为数据', value: 'behavior' },
       { title: '传感器数据', value: 'sensor' },
     ],
@@ -63,9 +62,6 @@ function toggleSubmenu(item: MenuItem) {
   border-right: 1px solid #eee;
   padding: 0;
   box-sizing: border-box;
-  position: fixed;
-  left: 0;
-  top: 0;
 }
 
 .menu-list {
