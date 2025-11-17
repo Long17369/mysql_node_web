@@ -4,7 +4,7 @@ import MainMenu from './components/MainMenu.vue'
 
 import MainTable from './components/MainTable.vue'
 
-const activeTab = ref<string>('sensor')
+const activeTab = ref<string>('sensorRealtime')
 
 function setActiveTab(value: string) {
   console.log(value)

@@ -18,7 +18,7 @@ export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse
 export interface FieldMapper {
   id: number
   f_name: string
-  db_name: string
+  db_name: `field${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10}`
   p_name: string
   unit: string // 单位
   type: '1' | '2' | '3' // 1: 文本, 2: 图片, 3: 视频
@@ -48,7 +48,11 @@ export interface DataCount {
 }
 
 export interface Device {
-  d_no: string
+  id: number
+  device_name: string
+  remarks: string | null
+  c_time: string
+  number: string
 }
 
 // 查询参数

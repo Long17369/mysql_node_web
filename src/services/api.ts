@@ -20,12 +20,7 @@ async function fetchApi<T>(url: string): Promise<T> {
   }
 }
 
-// Sensor API
-export async function getSensorFieldMapper(): Promise<FieldMapper[]> {
-  return fetchApi<FieldMapper[]>(`${BASE_URL}/sensor/table`)
-}
-
-export async function getSensorData(params: DataQueryParams = {}): Promise<Data[]> {
+async function getData(table: string, params: DataQueryParams): Promise<Data[]> {
   const { limit = 10, offset = 0, order_table = 'id', desc = false, where = {} } = params
   const queryString = new URLSearchParams({
     limit: limit.toString(),
@@ -34,25 +29,15 @@ export async function getSensorData(params: DataQueryParams = {}): Promise<Data[
     desc: desc.toString(),
     where: JSON.stringify(where),
   })
-  return fetchApi<Data[]>(`${BASE_URL}/sensor/data?${queryString}`)
+  return fetchApi<Data[]>(`${BASE_URL}/${table}/data?${queryString}`)
 }
 
-// Behavior API
-export async function getBehaviorFieldMapper(): Promise<FieldMapper[]> {
-  return fetchApi<FieldMapper[]>(`${BASE_URL}/behavior/table`)
-}
+export const getSensorFieldMapper = () => fetchApi<FieldMapper[]>(`${BASE_URL}/sensor/table`)
+export const getSensorData = (params: DataQueryParams = {}) => getData('sensor', params)
+export const getBehaviorFieldMapper = () => fetchApi<FieldMapper[]>(`${BASE_URL}/behavior/table`)
+export const getBehaviorData = (params: DataQueryParams = {}) => getData('behavior', params)
 
-export async function getBehaviorData(params: DataQueryParams = {}): Promise<Data[]> {
-  const { limit = 10, offset = 0, order_table = 'id', desc = false, where = {} } = params
-  const queryString = new URLSearchParams({
-    limit: limit.toString(),
-    offset: offset.toString(),
-    order_table,
-    desc: desc.toString(),
-    where: JSON.stringify(where),
-  })
-  return fetchApi<Data[]>(`${BASE_URL}/behavior/data?${queryString}`)
-}
+export const getDevice = () => fetchApi<Device[]>(`${BASE_URL}/device`)
 
 export async function getSensorDataCount(where: object) {
   const queryString = new URLSearchParams({
@@ -68,10 +53,3 @@ export async function getBehaviorDataCount(where: object) {
   return fetchApi<DataCount>(`${BASE_URL}/behavior/count?${queryString}`)
 }
 
-export async function getSensorDevice() {
-  return fetchApi<Device[]>(`${BASE_URL}/behavior/device`)
-}
-
-export async function getBehaviorDevice() {
-  return fetchApi<Device[]>(`${BASE_URL}/sensor/device`)
-}

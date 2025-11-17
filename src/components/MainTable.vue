@@ -1,50 +1,126 @@
 <script setup lang="ts">
-import DataComp from './DataComp.vue'
-import {
-  getSensorData,
-  getBehaviorData,
-  getSensorDevice,
-  getBehaviorDevice,
-  getSensorFieldMapper,
-  getBehaviorFieldMapper,
-  getSensorDataCount,
-  getBehaviorDataCount,
-} from '../services/api'
-import type { Data, Device, FieldMapper, DataCount } from '@/types/api'
+import type { Data, DataCount, Device, FieldMapper } from '@/types/api'
 import { computed } from 'vue'
+import {
+  getBehaviorData,
+  getBehaviorDataCount,
+  getDevice,
+  getBehaviorFieldMapper,
+  getSensorData,
+  getSensorDataCount,
+  getSensorFieldMapper,
+} from '../services/api'
+import DataComp from './HistoryData/DataComp.vue'
+import DataTable from './RealtimeData/DataTable.vue'
+import SettingTable from './SettingData/SettingTable.vue'
+import DeviceData from './DeviceData/DeviceData.vue'
 
-interface Table {
-  title: string
+interface HistoryData {
   fetchMapper: () => Promise<FieldMapper[]>
   fetchData: (params: {
-    limit: number
-    offset: number
-    order_table: string
-    desc: boolean
-    where: object
+    limit?: number
+    offset?: number
+    order_table?: string
+    desc?: boolean
+    where?: object
   }) => Promise<Data[]>
   fetchDevice: () => Promise<Device[]>
   fetchCount: (where: object) => Promise<DataCount>
 }
 
+interface RealtimeData {
+  fetchMapper: () => Promise<FieldMapper[]>
+  fetchData: (where?: object) => Promise<Data[]>
+  fetchDevice: () => Promise<Device[]>
+  fetchCount: (where: object) => Promise<DataCount>
+}
+
+interface HistoryTable {
+  title: string
+  data: HistoryData
+  type: 'HistoryTable'
+}
+
+interface RealtimeTable {
+  title: string
+  data: RealtimeData
+  type: 'RealtimeTable'
+}
+
+interface DeviceTable {
+  title: string
+  type: 'DeviceTable'
+}
+
+interface SettingTable {
+  title: string
+  type: 'SettingTable'
+}
+
 interface Tables {
-  [key: string]: Table
+  [key: string]: HistoryTable | RealtimeTable | SettingTable | DeviceTable
 }
 
 const tables: Tables = {
-  sensor: {
-    title: '传感器数据表',
-    fetchMapper: getSensorFieldMapper,
-    fetchData: getSensorData,
-    fetchDevice: getSensorDevice,
-    fetchCount: getSensorDataCount,
+  sensorRealtime: {
+    title: '实时传感器数据',
+    type: 'RealtimeTable',
+    data: {
+      fetchMapper: getSensorFieldMapper,
+      fetchData: (where?: object) =>
+        getSensorData({
+          limit: 1,
+          order_table: 'c_time',
+          where: where,
+          desc: true,
+        }),
+      fetchDevice: getDevice,
+      fetchCount: getSensorDataCount,
+    },
   },
-  behavior: {
-    title: '行为数据表',
-    fetchMapper: getBehaviorFieldMapper,
-    fetchData: getBehaviorData,
-    fetchDevice: getBehaviorDevice,
-    fetchCount: getBehaviorDataCount,
+  sensorHistory: {
+    title: '历史传感器数据',
+    type: 'HistoryTable',
+    data: {
+      fetchMapper: getSensorFieldMapper,
+      fetchData: getSensorData,
+      fetchDevice: getDevice,
+      fetchCount: getSensorDataCount,
+    },
+  },
+  behaviorRealtime: {
+    title: '实时行为数据',
+    type: 'RealtimeTable',
+    data: {
+      fetchMapper: getBehaviorFieldMapper,
+      fetchData: (where?: object) =>
+        getBehaviorData({
+          limit: 1,
+          order_table: 'c_time',
+          where: where,
+          desc: true,
+        }),
+      fetchDevice: getDevice,
+      fetchCount: getBehaviorDataCount,
+    },
+  },
+  behaviorHistory: {
+    title: '历史行为数据',
+    type: 'HistoryTable',
+    data: {
+      fetchMapper: getBehaviorFieldMapper,
+      fetchData: getBehaviorData,
+      fetchDevice: getDevice,
+      fetchCount: getBehaviorDataCount,
+    },
+  },
+  deviceManger: {
+    title: '设备管理',
+    type: 'DeviceTable',
+  },
+  setting: {
+    title: '设置',
+    type: 'SettingTable',
   },
 }
 
@@ -63,17 +139,29 @@ const table = computed(() => {
 <template>
   <div class="maintable">
     <DataComp
+      v-if="table.type === 'HistoryTable'"
       :key="table.title"
       :title="table.title"
-      :fetch-mapper="table.fetchMapper"
-      :fetch-data="table.fetchData"
-      :fetch-device="table.fetchDevice"
-      :fetch-count="table.fetchCount"
+      :fetch-mapper="table.data.fetchMapper"
+      :fetch-data="table.data.fetchData"
+      :fetch-device="table.data.fetchDevice"
+      :fetch-count="table.data.fetchCount"
     />
+    <DataTable
+      v-if="table.type === 'RealtimeTable'"
+      :key="table.title"
+      :title="table.title"
+      :fetch-mapper="table.data.fetchMapper"
+      :fetch-data="table.data.fetchData"
+      :fetch-device="table.data.fetchDevice"
+      :fetch-count="table.data.fetchCount"
+    />
+    <DeviceData :title="table.title" v-if="props.activeTab === 'deviceManger'" />
+    <SettingTable v-if="props.activeTab === 'SettingTable'" />
   </div>
 </template>
 
-<style>
+<style scoped>
 .maintable {
   width: 100%;
   height: 100%;

@@ -49,10 +49,7 @@ const visibleColumns = computed(() => {
 
 // Compute table headers
 const headers = computed(() => {
-  const baseHeaders = [
-    { key: 'id', label: 'ID' },
-    { key: 'd_no', label: '设备编号' },
-  ]
+  const baseHeaders = [{ key: 'd_no', label: '设备编号' }]
 
   const fieldHeaders = visibleColumns.value.map((field) => ({
     key: field.db_name,
@@ -210,8 +207,8 @@ const selectedChartFieldLabel = computed(() => {
           选择设备:
           <select v-model="whereDoNo">
             <option :value="undefined">全部</option>
-            <option v-for="field in device" :key="field.d_no" :value="field.d_no">
-              {{ field.d_no }}
+            <option v-for="field in device" :key="field.device_name" :value="field.device_name">
+              {{ field.device_name }}
             </option>
           </select>
         </label>
@@ -239,7 +236,7 @@ const selectedChartFieldLabel = computed(() => {
     <div v-if="viewMode === 'table'" class="pagination">
       <button @click="() => setPage(currentPage - 1)" :disabled="currentPage === 1">上一页</button>
       <ul id="pageSelect">
-        <li v-for="(value, index) in Array.from({ length: pageCount + 1 })" :key="index">
+        <li v-for="(_, index) in Array.from({ length: pageCount + 1 })" :key="index">
           <button
             @click="() => setPage(index)"
             v-if="showPage(index)"
@@ -289,7 +286,7 @@ const selectedChartFieldLabel = computed(() => {
   margin-bottom: 20px;
 }
 
-.table-header h2 {
+.table-header > h2 {
   margin: 0;
   color: #333;
 }
