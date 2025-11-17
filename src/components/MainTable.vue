@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Data, DataCount, Device, FieldMapper } from '@/types/api'
+import type { Data, DataCount, Device, FieldMapper, Where } from '@/types/api'
 import { computed } from 'vue'
 import {
   getBehaviorData,
@@ -22,7 +22,7 @@ interface HistoryData {
     offset?: number
     order_table?: string
     desc?: boolean
-    where?: object
+    where?: Where
   }) => Promise<Data[]>
   fetchDevice: () => Promise<Device[]>
   fetchCount: (where: object) => Promise<DataCount>
@@ -30,7 +30,7 @@ interface HistoryData {
 
 interface RealtimeData {
   fetchMapper: () => Promise<FieldMapper[]>
-  fetchData: (where?: object) => Promise<Data[]>
+  fetchData: (where?: Where) => Promise<Data[]>
   fetchDevice: () => Promise<Device[]>
   fetchCount: (where: object) => Promise<DataCount>
 }
@@ -67,7 +67,7 @@ const tables: Tables = {
     type: 'RealtimeTable',
     data: {
       fetchMapper: getSensorFieldMapper,
-      fetchData: (where?: object) =>
+      fetchData: (where?: Where) =>
         getSensorData({
           limit: 1,
           order_table: 'c_time',
@@ -93,7 +93,7 @@ const tables: Tables = {
     type: 'RealtimeTable',
     data: {
       fetchMapper: getBehaviorFieldMapper,
-      fetchData: (where?: object) =>
+      fetchData: (where?: Where) =>
         getBehaviorData({
           limit: 1,
           order_table: 'c_time',

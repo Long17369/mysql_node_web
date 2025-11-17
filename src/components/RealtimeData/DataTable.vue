@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { Data, DataCount, Device, FieldMapper } from '@/types/api'
+import type { Data, DataCount, Device, FieldMapper, Where } from '@/types/api'
 import DataCard from './DataCard.vue'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 interface Props {
   title: string
   fetchMapper: () => Promise<FieldMapper[]>
-  fetchData: (where?: object) => Promise<Data[]>
+  fetchData: (where?: Where) => Promise<Data[]>
   fetchDevice: () => Promise<Device[]>
   fetchCount: (where: object) => Promise<DataCount>
 }
@@ -20,9 +20,16 @@ const timer = ref<number>()
 const d_no = ref<string>()
 
 async function loadData() {
-  data.value = await props.fetchData({
-    d_no: d_no.value,
-  })
+  data.value = await props.fetchData(
+    d_no.value === undefined
+      ? {}
+      : {
+          d_no: {
+            value: d_no.value,
+            operator: '=',
+          },
+        },
+  )
   timer.value = setTimeout(loadData, time.value)
 }
 

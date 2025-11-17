@@ -55,13 +55,20 @@ export interface Device {
   number: string
 }
 
+export interface Where {
+  [key: string]: {
+    value: string
+    operator: '=' | '>' | '<'
+  }
+}
+
 // 查询参数
 export interface DataQueryParams {
   limit?: number // 默认: 10, 最大: 100
   offset?: number // 默认: 0
   order_table?: string // 默认: "id"
   desc?: boolean | 'true' | '1' // 默认: false
-  where?: object // 默认: {}
+  where?: Where // 默认: {}
 }
 
 // API 响应类型
