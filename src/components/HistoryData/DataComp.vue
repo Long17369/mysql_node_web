@@ -3,6 +3,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import type { FieldMapper, Data, Device, DataCount } from '@/types/api'
 import LineChart from './LineChart.vue'
 import DataTable from './DataTable.vue'
+import SelectDate from '../SelectDate.vue'
 
 interface Props {
   title: string
@@ -196,6 +197,16 @@ const selectedChartFieldLabel = computed(() => {
   const field = visibleColumns.value.find((f) => f.db_name === selectedChartField.value)
   return field ? field.f_name + (field.unit ? ` (${field.unit})` : '') : ''
 })
+
+const startTime = ref<Date>()
+const endTime = ref<Date>()
+
+const setStartTime = (time: Date | undefined) => {
+  startTime.value = time
+}
+const setEndTime = (time: Date | undefined) => {
+  endTime.value = time
+}
 </script>
 
 <template>
@@ -203,6 +214,8 @@ const selectedChartFieldLabel = computed(() => {
     <div class="table-header">
       <h2>{{ title }}</h2>
       <div class="controls">
+        <SelectDate :-set-date="setStartTime" title="开始时间" />
+        <SelectDate :-set-date="setEndTime" title="结束时间" />
         <label>
           选择设备:
           <select v-model="whereDoNo">
