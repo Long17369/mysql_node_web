@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import type { FieldMapper, Data, Device, DataCount } from '@/types/api'
+import type { FieldMapper, Data, Device, DataCount, Where } from '@/types/api'
 import LineChart from './LineChart.vue'
 import DataTable from './DataTable.vue'
 import SelectDate from '../SelectDate.vue'
@@ -13,7 +13,7 @@ interface Props {
     offset: number
     order_table: string
     desc: boolean
-    where: object
+    where: Where
   }) => Promise<Data[]>
   fetchDevice: () => Promise<Device[]>
   fetchCount: (where: object) => Promise<DataCount>
@@ -82,12 +82,19 @@ async function loadData() {
   loading.value = true
   error.value = null
   try {
+    const where: Where = {}
+    if (whereDoNo.value !== undefined) {
+      where.d_no = {
+        value: whereDoNo.value,
+        operator: '=',
+      }
+    }
     data.value = await props.fetchData({
       limit: pageSize.value,
       offset: offset.value,
       order_table: sortField.value,
       desc: sortDesc.value,
-      where: { d_no: whereDoNo.value },
+      where: where,
     })
   } catch (e) {
     error.value = '加载数据失败: ' + (e as Error).message
