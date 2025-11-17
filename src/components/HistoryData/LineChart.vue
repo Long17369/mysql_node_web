@@ -14,12 +14,22 @@ import {
   type ChartOptions,
   type ChartDataset,
   type Point,
+  Filler,
 } from 'chart.js'
 import type { Data, FieldMapper } from '@/types/api'
 import { colorConfig } from '@/config/colors'
 
 // Chart.js 组件
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+)
 
 interface Props {
   mapper: FieldMapper[]
