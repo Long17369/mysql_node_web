@@ -43,6 +43,10 @@ export interface Data {
   field10: string | null
   c_time: string // ISO 8601 格式
   online: string | null // "实时数据" | "保存数据"
+  // Error data fields
+  e_msg?: string
+  e_no?: string
+  type?: string
 }
 
 // 数据总数类型

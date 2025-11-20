@@ -34,6 +34,7 @@ const menuItems = ref<(MenuItem | SubMenuItem)[]>([
     submenu: [
       { type: 'SubMenuItem', title: '实时数据', value: 'realtimeData' },
       { type: 'SubMenuItem', title: '历史数据', value: 'historyData' },
+      { type: 'SubMenuItem', title: '错误数据', value: 'errorData' },
     ],
   },
   { type: 'SubMenuItem', title: '设备管理', value: 'deviceManger' },
