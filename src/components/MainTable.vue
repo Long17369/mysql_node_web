@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Data, DataCount, Device, FieldMapper, Where } from '@/types/api'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import {
   getBehaviorData,
   getBehaviorDataCount,
@@ -139,35 +139,63 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const dataType = ref<'sensor' | 'behavior'>('sensor')
+
 const table = computed(() => {
-  console.log(tables[props.activeTab])
+  if (props.activeTab === 'realtimeData') {
+    return dataType.value === 'sensor' ? tables.sensorRealtime : tables.behaviorRealtime
+  }
+  if (props.activeTab === 'historyData') {
+    return dataType.value === 'sensor' ? tables.sensorHistory : tables.behaviorHistory
+  }
   return tables[props.activeTab]
 })
 </script>
 
 <template>
   <div class="maintable">
-    <DataComp
-      v-if="table.type === 'HistoryTable'"
-      :key="table.title"
-      :title="table.title"
-      :fetch-mapper="table.data.fetchMapper"
-      :fetch-data="table.data.fetchData"
-      :fetch-device="table.data.fetchDevice"
-      :fetch-count="table.data.fetchCount"
-      :fetch-time-range="table.data.fetchTimeRange"
-    />
-    <DataTable
-      v-if="table.type === 'RealtimeTable'"
-      :key="table.title"
-      :title="table.title"
-      :fetch-mapper="table.data.fetchMapper"
-      :fetch-data="table.data.fetchData"
-      :fetch-device="table.data.fetchDevice"
-      :fetch-count="table.data.fetchCount"
-    />
-    <DeviceData :title="table.title" v-if="props.activeTab === 'deviceManger'" />
-    <SettingTable v-if="props.activeTab === 'SettingTable'" />
+    <div
+      v-if="props.activeTab === 'realtimeData' || props.activeTab === 'historyData'"
+      class="type-selector"
+    >
+      <label :class="{ active: dataType === 'sensor' }">
+        <input type="radio" v-model="dataType" value="sensor" />
+        传感器数据
+      </label>
+      <label :class="{ active: dataType === 'behavior' }">
+        <input type="radio" v-model="dataType" value="behavior" />
+        行为数据
+      </label>
+    </div>
+    <div class="content-container">
+      <Transition name="fade" mode="out-in">
+        <DataComp
+          v-if="table.type === 'HistoryTable'"
+          :key="table.title"
+          :title="table.title"
+          :fetch-mapper="table.data.fetchMapper"
+          :fetch-data="table.data.fetchData"
+          :fetch-device="table.data.fetchDevice"
+          :fetch-count="table.data.fetchCount"
+          :fetch-time-range="table.data.fetchTimeRange"
+        />
+        <DataTable
+          v-else-if="table.type === 'RealtimeTable'"
+          :key="table.title"
+          :title="table.title"
+          :fetch-mapper="table.data.fetchMapper"
+          :fetch-data="table.data.fetchData"
+          :fetch-device="table.data.fetchDevice"
+          :fetch-count="table.data.fetchCount"
+        />
+        <DeviceData
+          v-else-if="table.type === 'DeviceTable'"
+          :key="table.title"
+          :title="table.title"
+        />
+        <SettingTable v-else-if="table.type === 'SettingTable'" :key="table.title" />
+      </Transition>
+    </div>
   </div>
 </template>
 
@@ -175,5 +203,68 @@ const table = computed(() => {
 .maintable {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+}
+
+.content-container {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.type-selector {
+  margin: 20px;
+  display: inline-flex;
+  background: #e9ecef;
+  padding: 4px;
+  border-radius: 12px;
+  width: fit-content;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.type-selector label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 500;
+  user-select: none;
+  min-width: 100px;
+}
+
+.type-selector label:hover:not(.active) {
+  color: #495057;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.type-selector label.active {
+  background: #fff;
+  color: #228be6;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.04);
+  font-weight: 600;
+}
+
+.type-selector input {
+  display: none;
 }
 </style>
