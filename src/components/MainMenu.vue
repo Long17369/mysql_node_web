@@ -32,10 +32,8 @@ const menuItems = ref<(MenuItem | SubMenuItem)[]>([
     type: 'MenuItem',
     submenuOpen: true,
     submenu: [
-      { type: 'SubMenuItem', title: '传感器实时数据', value: 'sensorRealtime' },
-      { type: 'SubMenuItem', title: '行为实时数据', value: 'behaviorRealtime' },
-      { type: 'SubMenuItem', title: '传感器历史数据', value: 'sensorHistory' },
-      { type: 'SubMenuItem', title: '行为历史数据', value: 'behaviorHistory' },
+      { type: 'SubMenuItem', title: '实时数据', value: 'realtimeData' },
+      { type: 'SubMenuItem', title: '历史数据', value: 'historyData' },
     ],
   },
   { type: 'SubMenuItem', title: '设备管理', value: 'deviceManger' },
