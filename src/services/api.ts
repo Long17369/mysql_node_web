@@ -53,3 +53,20 @@ export async function getBehaviorDataCount(where: object) {
   return fetchApi<DataCount>(`${BASE_URL}/behavior/count?${queryString}`)
 }
 
+export async function getSensorTimeRange(where: object = {}) {
+  const queryString = new URLSearchParams({
+    where: JSON.stringify(where),
+  })
+  return fetchApi<{ minTime: string; maxTime: string }>(
+    `${BASE_URL}/sensor/time-range?${queryString}`,
+  )
+}
+
+export async function getBehaviorTimeRange(where: object = {}) {
+  const queryString = new URLSearchParams({
+    where: JSON.stringify(where),
+  })
+  return fetchApi<{ minTime: string; maxTime: string }>(
+    `${BASE_URL}/behavior/time-range?${queryString}`,
+  )
+}

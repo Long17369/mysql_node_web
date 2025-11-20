@@ -2,15 +2,17 @@
 import { ref, watch } from 'vue'
 
 interface Props {
-  SetDate: (date: Date | undefined) => void
+  setDate: (date: string | undefined) => void
   title: string
+  minTime: string
+  maxTime: string
 }
 
 const props = defineProps<Props>()
-const date = ref<Date>()
+const date = ref<string>()
 
 watch(date, () => {
-  props.SetDate(date.value)
+  props.setDate(date.value)
 })
 </script>
 
@@ -18,7 +20,7 @@ watch(date, () => {
   <div class="DateSelect">
     <label>
       {{ props.title }}
-      <input type="date" v-model="date" />
+      <input type="date" v-model="date" :title="props.title" :min="minTime" :max="maxTime"/>
     </label>
   </div>
 </template>
