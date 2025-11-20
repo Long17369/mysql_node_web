@@ -55,11 +55,13 @@ export interface Device {
   number: string
 }
 
+export interface WhereCondition {
+  value: string
+  operator: '=' | '>' | '<' | '>=' | '<='
+}
+
 export interface Where {
-  [key: string]: {
-    value: string
-    operator: '=' | '>' | '<'
-  }
+  [key: string]: WhereCondition | WhereCondition[]
 }
 
 // 查询参数

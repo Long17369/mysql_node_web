@@ -9,6 +9,8 @@ import {
   getSensorData,
   getSensorDataCount,
   getSensorFieldMapper,
+  getSensorTimeRange,
+  getBehaviorTimeRange,
 } from '../services/api'
 import DataComp from './HistoryData/DataComp.vue'
 import DataTable from './RealtimeData/DataTable.vue'
@@ -26,6 +28,7 @@ interface HistoryData {
   }) => Promise<Data[]>
   fetchDevice: () => Promise<Device[]>
   fetchCount: (where: object) => Promise<DataCount>
+  fetchTimeRange: (where: object) => Promise<{ minTime: string; maxTime: string }>
 }
 
 interface RealtimeData {
@@ -86,6 +89,7 @@ const tables: Tables = {
       fetchData: getSensorData,
       fetchDevice: getDevice,
       fetchCount: getSensorDataCount,
+      fetchTimeRange: getSensorTimeRange,
     },
   },
   behaviorRealtime: {
@@ -112,6 +116,7 @@ const tables: Tables = {
       fetchData: getBehaviorData,
       fetchDevice: getDevice,
       fetchCount: getBehaviorDataCount,
+      fetchTimeRange: getBehaviorTimeRange,
     },
   },
   deviceManger: {
@@ -146,6 +151,7 @@ const table = computed(() => {
       :fetch-data="table.data.fetchData"
       :fetch-device="table.data.fetchDevice"
       :fetch-count="table.data.fetchCount"
+      :fetch-time-range="table.data.fetchTimeRange"
     />
     <DataTable
       v-if="table.type === 'RealtimeTable'"
