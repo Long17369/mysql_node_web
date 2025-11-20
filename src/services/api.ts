@@ -71,6 +71,7 @@ export const getBehaviorFieldMapper = () => fetchApi<FieldMapper[]>(`${BASE_URL}
  * @returns Promise<Data[]>
  */
 export const getBehaviorData = (params: DataQueryParams = {}) => getData('behavior', params)
+export const getErrorData = (params: DataQueryParams = {}) => getData('error', params)
 
 /**
  * 获取设备列表
@@ -142,6 +143,18 @@ export async function getBehaviorDataCount(where: object) {
 }
 
 /**
+ * 获取错误数据总数
+ * @param where 查询条件
+ * @returns Promise<DataCount>
+ */
+export async function getErrorDataCount(where: object) {
+  const queryString = new URLSearchParams({
+    where: JSON.stringify(where),
+  })
+  return fetchApi<DataCount>(`${BASE_URL}/error/count?${queryString}`)
+}
+
+/**
  * 获取传感器数据时间范围
  * @param where 查询条件
  * @returns Promise<{ minTime: string; maxTime: string }>
@@ -168,3 +181,23 @@ export async function getBehaviorTimeRange(where: object = {}) {
     `${BASE_URL}/behavior/time-range?${queryString}`,
   )
 }
+
+/**
+ * 获取错误数据时间范围
+ * @param where 查询条件
+ * @returns Promise<{ minTime: string; maxTime: string }>
+ */
+export async function getErrorTimeRange(where: object = {}) {
+  const queryString = new URLSearchParams({
+    where: JSON.stringify(where),
+  })
+  return fetchApi<{ minTime: string; maxTime: string }>(
+    `${BASE_URL}/error/time-range?${queryString}`,
+  )
+}
+
+/**
+ * 获取错误字段映射
+ * @returns Promise<FieldMapper[]>
+ */
+export const getErrorFieldMapper = () => fetchApi<FieldMapper[]>(`${BASE_URL}/error/table`)

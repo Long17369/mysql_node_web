@@ -11,6 +11,10 @@ import {
   getSensorFieldMapper,
   getSensorTimeRange,
   getBehaviorTimeRange,
+  getErrorData,
+  getErrorDataCount,
+  getErrorFieldMapper,
+  getErrorTimeRange,
 } from '../services/api'
 import DataComp from './HistoryData/DataComp.vue'
 import DataTable from './RealtimeData/DataTable.vue'
@@ -45,6 +49,7 @@ interface HistoryTable {
   title: string
   data: HistoryData
   type: 'HistoryTable'
+  showChart?: boolean
 }
 
 // 实时数据表配置
@@ -123,6 +128,18 @@ const tables: Tables = {
       fetchTimeRange: getBehaviorTimeRange,
     },
   },
+  errorData: {
+    title: '错误数据',
+    type: 'HistoryTable',
+    showChart: false,
+    data: {
+      fetchMapper: getErrorFieldMapper,
+      fetchData: getErrorData,
+      fetchDevice: getDevice,
+      fetchCount: getErrorDataCount,
+      fetchTimeRange: getErrorTimeRange,
+    },
+  },
   deviceManger: {
     title: '设备管理',
     type: 'DeviceTable',
@@ -173,6 +190,7 @@ const table = computed(() => {
           v-if="table.type === 'HistoryTable'"
           :key="table.title"
           :title="table.title"
+          :show-chart="table.showChart"
           :fetch-mapper="table.data.fetchMapper"
           :fetch-data="table.data.fetchData"
           :fetch-device="table.data.fetchDevice"

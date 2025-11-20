@@ -9,6 +9,7 @@ import '@/assets/controls.css'
 // 组件 Props
 interface Props {
   title: string
+  showChart?: boolean
   fetchMapper: () => Promise<FieldMapper[]>
   fetchData: (params: {
     limit: number
@@ -22,7 +23,9 @@ interface Props {
   fetchTimeRange: (where: object) => Promise<{ minTime: string; maxTime: string }>
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  showChart: true,
+})
 
 // 状态变量
 const mapper = ref<FieldMapper[]>([])
@@ -408,6 +411,7 @@ function handleMouseLeave() {
     />
 
     <LineChart
+      v-if="showChart"
       :mapper="mapper"
       :data="data"
       :field-key="selectedChartField"
