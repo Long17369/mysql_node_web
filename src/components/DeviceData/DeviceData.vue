@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { colorConfig } from '@/config/colors'
-import { getDevice } from '@/services/api'
+import { getDevice, addDevice, updateDevice, deleteDevice } from '@/services/api'
 import type { Device } from '@/types/api'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 
 // 组件 Props
 interface Props {
@@ -18,14 +18,21 @@ interface Header {
 }
 
 const data = ref<Device[]>([])
-const headers = ref<Header[]>([])
-
-headers.value = [
+const headers = ref<Header[]>([
   { key: 'device_name', label: '设备名称' },
   { key: 'number', label: '设备编号' },
   { key: 'remarks', label: '备注' },
   { key: 'c_time', label: '创建时间' },
-]
+])
+
+const searchParams = reactive({
+  device_name: '',
+  number: '',
+})
+
+const showModal = ref(false)
+const isEdit = ref(false)
+const currentDevice = reactive<Partial<Device>>({})
 
 // 格式化日期
 function formatDate(dateString: string | null) {
@@ -43,24 +50,73 @@ function getCellValue(row: Device, key: string) {
   return value ?? '-'
 }
 
-// 修改数据
-function modifyData(id: number, index: number) {
-  console.log(`Modify data with ID: ${id} at index: ${index}`)
+// Fetch data
+const fetchData = async () => {
+  data.value = await getDevice(searchParams)
 }
 
-// 删除数据
-function deleteData(id: number, index: number) {
-  console.log(`Delete data with ID: ${id} at index: ${index}`)
+// Search
+const handleSearch = () => {
+  fetchData()
 }
 
-onMounted(async () => {
-  data.value = await getDevice()
-})
+// Add
+const handleAdd = () => {
+  isEdit.value = false
+  Object.assign(currentDevice, { device_name: '', number: '', remarks: '' })
+  showModal.value = true
+}
+
+// Edit
+const handleEdit = (row: Device) => {
+  isEdit.value = true
+  Object.assign(currentDevice, row)
+  showModal.value = true
+}
+
+// Delete
+const handleDelete = async (id: number) => {
+  if (confirm('确定要删除该设备吗？')) {
+    await deleteDevice(id)
+    fetchData()
+  }
+}
+
+// Save
+const handleSave = async () => {
+  if (!currentDevice.device_name || !currentDevice.number) {
+    alert('请填写设备名称和编号')
+    return
+  }
+
+  try {
+    if (isEdit.value && currentDevice.id) {
+      await updateDevice(currentDevice.id, currentDevice)
+    } else {
+      await addDevice(currentDevice as Omit<Device, 'id' | 'c_time'>)
+    }
+    showModal.value = false
+    fetchData()
+  } catch (e) {
+    alert('操作失败: ' + (e as Error).message)
+  }
+}
+
+onMounted(fetchData)
 </script>
 
 <template>
   <div class="deviceData">
     <h2>{{ title }}</h2>
+
+    <!-- Search & Add -->
+    <div class="toolbar">
+      <input v-model="searchParams.device_name" placeholder="设备名称" />
+      <input v-model="searchParams.number" placeholder="设备编号" />
+      <button @click="handleSearch">查询</button>
+      <button @click="handleAdd" class="add-btn">新增设备</button>
+    </div>
+
     <div class="data">
       <table>
         <thead>
@@ -79,12 +135,35 @@ onMounted(async () => {
               {{ getCellValue(row, header.key) }}
             </td>
             <td>
-              <span class="modify" @click="() => modifyData(row.id, index)">修改</span>
-              <span class="delete" @click="() => deleteData(row.id, index)">删除</span>
+              <span class="modify" @click="() => handleEdit(row)">修改</span>
+              <span class="delete" @click="() => handleDelete(row.id)">删除</span>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Modal -->
+    <div v-if="showModal" class="modal-overlay">
+      <div class="modal">
+        <h3>{{ isEdit ? '编辑设备' : '新增设备' }}</h3>
+        <div class="form-item">
+          <label>设备名称:</label>
+          <input v-model="currentDevice.device_name" />
+        </div>
+        <div class="form-item">
+          <label>设备编号:</label>
+          <input v-model="currentDevice.number" />
+        </div>
+        <div class="form-item">
+          <label>备注:</label>
+          <input v-model="currentDevice.remarks" />
+        </div>
+        <div class="modal-actions">
+          <button @click="showModal = false">取消</button>
+          <button @click="handleSave" class="primary">保存</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -168,5 +247,80 @@ tbody tr.odd {
 
 tbody tr:hover {
   background: v-bind('colorConfig.tableRowHover');
+}
+
+.toolbar {
+  margin-bottom: 16px;
+  display: flex;
+  gap: 10px;
+}
+.toolbar input {
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.toolbar button {
+  padding: 6px 12px;
+  cursor: pointer;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.add-btn {
+  background: #4caf50 !important;
+  color: white;
+  border: none !important;
+  margin-left: auto;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+}
+.form-item {
+  margin-bottom: 15px;
+}
+.form-item label {
+  display: block;
+  margin-bottom: 5px;
+}
+.form-item input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+.modal-actions button {
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background: white;
+}
+.modal-actions button.primary {
+  background: #1976d2;
+  color: white;
+  border: none;
 }
 </style>
