@@ -35,8 +35,14 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 
 // 分页和排序状态
-const currentPage = ref(1)
 const pageSize = ref(10)
+const offset = ref(0)
+const currentPage = computed({
+  get: () => Math.floor(offset.value / pageSize.value) + 1,
+  set: (val) => {
+    offset.value = (val - 1) * pageSize.value
+  },
+})
 const sortField = ref('id')
 const sortDesc = ref(false)
 const viewMode = ref<'table' | 'chart'>('table')
@@ -97,7 +103,7 @@ const headers = computed(() => {
 })
 
 // Compute total pages (we don't have total count, so show navigation)
-const offset = computed(() => (currentPage.value - 1) * pageSize.value)
+// const offset = computed(() => (currentPage.value - 1) * pageSize.value)
 
 // Load field mapper
 async function loadMapper() {
@@ -262,7 +268,7 @@ onMounted(() => {
 })
 
 watch(
-  () => [currentPage.value, pageSize.value, sortField.value, sortDesc.value],
+  () => [offset.value, pageSize.value, sortField.value, sortDesc.value],
   () => {
     loadData()
     loadDataCount()
@@ -297,6 +303,68 @@ const selectedChartFieldLabel = computed(() => {
   const field = visibleColumns.value.find((f) => f.db_name === selectedChartField.value)
   return field ? field.f_name + (field.unit ? ` (${field.unit})` : '') : ''
 })
+
+// Chart interaction
+const isDragging = ref(false)
+const startX = ref(0)
+const startOffset = ref(0)
+const chartWidth = ref(0)
+
+function handleWheel(event: WheelEvent) {
+  if (event.deltaY < 0) {
+    if (pageSize.value > 5) {
+      pageSize.value = Math.max(5, pageSize.value - 1)
+    }
+  } else {
+    if (pageSize.value < 100) {
+      pageSize.value = Math.min(100, pageSize.value + 1)
+    }
+  }
+}
+
+function handleMouseDown(event: MouseEvent) {
+  isDragging.value = true
+  startX.value = event.clientX
+  startOffset.value = offset.value
+  const el = event.currentTarget as HTMLElement
+  chartWidth.value = el.clientWidth
+}
+
+let lastUpdate = 0
+
+function handleMouseMove(event: MouseEvent) {
+  if (!isDragging.value) return
+
+  const now = Date.now()
+  if (now - lastUpdate < 50) return
+  lastUpdate = now
+
+  const currentX = event.clientX
+  const diffX = currentX - startX.value
+
+  if (chartWidth.value > 0) {
+    const deltaData = -Math.round((diffX / chartWidth.value) * pageSize.value)
+    if (deltaData !== 0) {
+      const newOffset = startOffset.value + deltaData
+      // 边界检查
+      if (newOffset >= 0 && newOffset < dataCount.value.count) {
+        offset.value = newOffset
+      } else if (newOffset < 0) {
+        offset.value = 0
+      } else if (newOffset >= dataCount.value.count) {
+        offset.value = dataCount.value.count - 1
+      }
+    }
+  }
+}
+
+function handleMouseUp() {
+  isDragging.value = false
+}
+
+function handleMouseLeave() {
+  isDragging.value = false
+}
 </script>
 
 <template>
@@ -344,6 +412,11 @@ const selectedChartFieldLabel = computed(() => {
       :data="data"
       :field-key="selectedChartField"
       :field-label="selectedChartFieldLabel"
+      @wheel.prevent="handleWheel"
+      @mousedown="handleMouseDown"
+      @mousemove="handleMouseMove"
+      @mouseup="handleMouseUp"
+      @mouseleave="handleMouseLeave"
     />
 
     <div v-if="viewMode === 'table'" class="pagination">
