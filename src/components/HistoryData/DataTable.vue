@@ -2,6 +2,7 @@
 import type { Data } from '@/types/api'
 import { colorConfig } from '@/config/colors'
 
+// 组件 Props
 interface Props {
   headers: { key: string; label: string }[]
   sortField: string

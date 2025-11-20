@@ -17,6 +17,7 @@ import DataTable from './RealtimeData/DataTable.vue'
 import SettingTable from './SettingData/SettingTable.vue'
 import DeviceData from './DeviceData/DeviceData.vue'
 
+// 历史数据接口
 interface HistoryData {
   fetchMapper: () => Promise<FieldMapper[]>
   fetchData: (params: {
@@ -31,6 +32,7 @@ interface HistoryData {
   fetchTimeRange: (where: object) => Promise<{ minTime: string; maxTime: string }>
 }
 
+// 实时数据接口
 interface RealtimeData {
   fetchMapper: () => Promise<FieldMapper[]>
   fetchData: (where?: Where) => Promise<Data[]>
@@ -38,12 +40,14 @@ interface RealtimeData {
   fetchCount: (where: object) => Promise<DataCount>
 }
 
+// 历史数据表配置
 interface HistoryTable {
   title: string
   data: HistoryData
   type: 'HistoryTable'
 }
 
+// 实时数据表配置
 interface RealtimeTable {
   title: string
   data: RealtimeData

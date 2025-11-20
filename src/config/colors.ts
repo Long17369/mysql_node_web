@@ -1,4 +1,4 @@
-// Color configuration for the application
+// 应用颜色配置接口
 export interface ColorConfig {
   primary: string[]
   secondary: string
@@ -11,21 +11,21 @@ export interface ColorConfig {
   textSecondary: string
 }
 
-// Default color configuration
+// 默认颜色配置
 export const defaultColors: ColorConfig = {
   primary: [
-    '#667eea', // blue
+    '#667eea', // 蓝色
     '#5a67d8',
     '#4c51bf',
     '#434190',
-    '#f56565', // red
-    '#ed8936', // orange
-    '#f6e05e', // yellow
-    '#48bb78', // green
-    '#38b2ac', // teal
-    '#4299e1', // light blue
-    '#9f7aea', // purple
-    '#ed64a6', // pink
+    '#f56565', // 红色
+    '#ed8936', // 橙色
+    '#f6e05e', // 黄色
+    '#48bb78', // 绿色
+    '#38b2ac', // 青色
+    '#4299e1', // 浅蓝
+    '#9f7aea', // 紫色
+    '#ed64a6', // 粉色
   ],
   secondary: '#764ba2',
   tableHeaderBg: '#f5f5f5',
@@ -37,17 +37,17 @@ export const defaultColors: ColorConfig = {
   textSecondary: '#666',
 }
 
-// Create a reactive color configuration
+// 创建响应式颜色配置
 import { reactive } from 'vue'
 
 export const colorConfig = reactive<ColorConfig>({ ...defaultColors })
 
-// Function to update color configuration
+// 更新颜色配置函数
 export function updateColorConfig(newColors: Partial<ColorConfig>) {
   Object.assign(colorConfig, newColors)
 }
 
-// Function to reset to default colors
+// 重置为默认颜色函数
 export function resetColorConfig() {
   Object.assign(colorConfig, defaultColors)
 }

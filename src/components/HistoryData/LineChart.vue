@@ -31,6 +31,7 @@ ChartJS.register(
   Filler,
 )
 
+// 组件 Props
 interface Props {
   mapper: FieldMapper[]
   data: Data[]
@@ -38,7 +39,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// 图标数据
+// 图表数据
 const chartData = computed<ChartData<'line'>>(() => {
   const labels = props.data.map((row) => {
     const date = new Date(row.c_time)

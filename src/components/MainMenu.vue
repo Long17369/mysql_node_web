@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+// 菜单项接口
 interface MenuItem {
   type: 'MenuItem'
   title: string
@@ -9,18 +10,21 @@ interface MenuItem {
   submenu: SubMenuItem[] | MenuItem[]
 }
 
+// 子菜单项接口
 interface SubMenuItem {
   type: 'SubMenuItem'
   title: string
   value: string
 }
 
+// 组件 Props
 interface Props {
   setActiveTab: (arg0: string) => void
 }
 
 defineProps<Props>()
 
+// 菜单项数据
 const menuItems = ref<(MenuItem | SubMenuItem)[]>([
   {
     title: '数据管理',
@@ -38,6 +42,7 @@ const menuItems = ref<(MenuItem | SubMenuItem)[]>([
   { type: 'SubMenuItem', title: '设置', value: 'setting' },
 ])
 
+// 切换子菜单展开/收起状态
 function toggleSubmenu(item: MenuItem) {
   if (item.submenu) {
     item.submenuOpen = !item.submenuOpen

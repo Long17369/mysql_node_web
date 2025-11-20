@@ -4,12 +4,14 @@ import { getDevice } from '@/services/api'
 import type { Device } from '@/types/api'
 import { ref, onMounted } from 'vue'
 
+// 组件 Props
 interface Props {
   title: string
 }
 
 defineProps<Props>()
 
+// 表头接口
 interface Header {
   key: string
   label: string
@@ -25,11 +27,13 @@ headers.value = [
   { key: 'c_time', label: '创建时间' },
 ]
 
+// 格式化日期
 function formatDate(dateString: string | null) {
   if (!dateString) return '-'
   return new Date(dateString).toLocaleString('zh-CN')
 }
 
+// 获取单元格值
 function getCellValue(row: Device, key: string) {
   const rowRecord = row as unknown as Record<string, unknown>
   const value = rowRecord[key]
@@ -39,10 +43,12 @@ function getCellValue(row: Device, key: string) {
   return value ?? '-'
 }
 
+// 修改数据
 function modifyData(id: number, index: number) {
   console.log(`Modify data with ID: ${id} at index: ${index}`)
 }
 
+// 删除数据
 function deleteData(id: number, index: number) {
   console.log(`Delete data with ID: ${id} at index: ${index}`)
 }
