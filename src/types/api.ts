@@ -59,6 +59,9 @@ export interface Device {
   number: string
 }
 
+export type CreateDeviceParams = Omit<Device, 'id' | 'c_time'>
+export type UpdateDeviceParams = Partial<Omit<Device, 'id' | 'c_time'>>
+
 // 查询条件类型
 export interface WhereCondition {
   value: string

@@ -5,6 +5,8 @@ import type {
   ApiResponse,
   Device,
   DataCount,
+  CreateDeviceParams,
+  UpdateDeviceParams,
 } from '@/types/api'
 
 const BASE_URL = '/api'
@@ -12,10 +14,11 @@ const BASE_URL = '/api'
 /**
  * 通用 API 请求函数
  * @param url 请求地址
+ * @param options 请求配置
  * @returns Promise<T>
  */
-async function fetchApi<T>(url: string): Promise<T> {
-  const response = await fetch(url)
+async function fetchApi<T>(url: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(url, options)
   const data: ApiResponse<T> = await response.json()
 
   if (data.success) {
@@ -71,9 +74,48 @@ export const getBehaviorData = (params: DataQueryParams = {}) => getData('behavi
 
 /**
  * 获取设备列表
+ * @param params 查询参数
  * @returns Promise<Device[]>
  */
-export const getDevice = () => fetchApi<Device[]>(`${BASE_URL}/device`)
+export const getDevice = (params?: { device_name?: string; number?: string }) => {
+  const queryString = new URLSearchParams(params as Record<string, string>).toString()
+  return fetchApi<Device[]>(`${BASE_URL}/device?${queryString}`)
+}
+
+/**
+ * 新增设备
+ * @param device 设备信息
+ */
+export const addDevice = (device: CreateDeviceParams) => {
+  return fetchApi(`${BASE_URL}/device`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(device),
+  })
+}
+
+/**
+ * 更新设备
+ * @param id 设备ID
+ * @param device 设备信息
+ */
+export const updateDevice = (id: number, device: UpdateDeviceParams) => {
+  return fetchApi(`${BASE_URL}/device`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, ...device }),
+  })
+}
+
+/**
+ * 删除设备
+ * @param id 设备ID
+ */
+export const deleteDevice = (id: number) => {
+  return fetchApi(`${BASE_URL}/device?id=${id}`, {
+    method: 'DELETE',
+  })
+}
 
 /**
  * 获取传感器数据总数
