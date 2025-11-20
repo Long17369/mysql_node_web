@@ -6,6 +6,7 @@ import DataTable from './DataTable.vue'
 import SelectDate from '../SelectDate.vue'
 import '@/assets/controls.css'
 
+// 组件 Props
 interface Props {
   title: string
   fetchMapper: () => Promise<FieldMapper[]>
@@ -23,6 +24,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
+// 状态变量
 const mapper = ref<FieldMapper[]>([])
 const data = ref<Data[]>([])
 const dataCount = ref<DataCount>({
@@ -32,7 +34,7 @@ const device = ref<Device[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-// Pagination and sorting state
+// 分页和排序状态
 const currentPage = ref(1)
 const pageSize = ref(10)
 const sortField = ref('id')
@@ -45,6 +47,7 @@ const endTime = ref<Date>()
 const minTime = ref<Date>(new Date('2020-01-01'))
 const maxTime = ref<Date>(new Date())
 
+// 最小时间字符串
 const minTimeStr = computed({
   get: () => (minTime.value ? minTime.value.toISOString().split('T')[0] : ''),
   set: (val: string) => (minTime.value = new Date(val)),

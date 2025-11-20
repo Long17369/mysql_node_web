@@ -4,6 +4,7 @@ export interface SuccessResponse<T> {
   data: T
 }
 
+// 错误响应格式
 export interface ErrorResponse {
   success: false
   error: {
@@ -12,6 +13,7 @@ export interface ErrorResponse {
   }
 }
 
+// API 响应类型联合
 export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse
 
 // 字段映射类型
@@ -43,10 +45,12 @@ export interface Data {
   online: string | null // "实时数据" | "保存数据"
 }
 
+// 数据总数类型
 export interface DataCount {
   count: number
 }
 
+// 设备信息类型
 export interface Device {
   id: number
   device_name: string
@@ -55,11 +59,13 @@ export interface Device {
   number: string
 }
 
+// 查询条件类型
 export interface WhereCondition {
   value: string
   operator: '=' | '>' | '<' | '>=' | '<='
 }
 
+// 查询条件对象
 export interface Where {
   [key: string]: WhereCondition | WhereCondition[]
 }
@@ -73,7 +79,7 @@ export interface DataQueryParams {
   where?: Where // 默认: {}
 }
 
-// API 响应类型
+// API 响应类型别名
 export type MapperResponse = ApiResponse<FieldMapper[]>
 export type DataResponse = ApiResponse<Data[]>
 export type DataCountResponse = ApiResponse<number>

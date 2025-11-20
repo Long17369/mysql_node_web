@@ -2,11 +2,13 @@
 import type { Data, FieldMapper } from '@/types/api'
 import { onMounted, ref } from 'vue'
 
+// 组件 Props
 interface Props {
   data: Data
   mapper: FieldMapper[]
 }
 
+// 值类型
 type Value = {
   id: number
   key: string

@@ -4,8 +4,10 @@ import MainMenu from './components/MainMenu.vue'
 
 import MainTable from './components/MainTable.vue'
 
+// 当前激活的标签页
 const activeTab = ref<string>('sensorRealtime')
 
+// 设置激活的标签页
 function setActiveTab(value: string) {
   console.log(value)
   activeTab.value = value

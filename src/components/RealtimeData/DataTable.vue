@@ -2,6 +2,8 @@
 import type { Data, DataCount, Device, FieldMapper, Where } from '@/types/api'
 import DataCard from './DataCard.vue'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
+
+// 组件 Props
 interface Props {
   title: string
   fetchMapper: () => Promise<FieldMapper[]>
@@ -11,6 +13,7 @@ interface Props {
 }
 const props = defineProps<Props>()
 
+// 状态变量
 const data = ref<Data[]>([])
 const mapper = ref<FieldMapper[]>([])
 const device = ref<Device[]>([])
@@ -19,6 +22,7 @@ const time = ref<number>(1000)
 const timer = ref<number>()
 const d_no = ref<string>()
 
+// 加载数据
 async function loadData() {
   data.value = await props.fetchData(
     d_no.value === undefined
