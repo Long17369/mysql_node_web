@@ -401,27 +401,38 @@ function handleMouseLeave() {
 
     <div v-if="error" class="error">{{ error }}</div>
 
-    <DataTable
-      :data="data"
-      :headers="headers"
-      :sort-desc="sortDesc"
-      :sort-field="sortField"
-      :get-cell-value="getCellValue"
-      :sort-by="sortBy"
-    />
+    <div v-if="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>加载中...</p>
+    </div>
 
-    <LineChart
-      v-if="showChart"
-      :mapper="mapper"
-      :data="data"
-      :field-key="selectedChartField"
-      :field-label="selectedChartFieldLabel"
-      @wheel.prevent="handleWheel"
-      @mousedown="handleMouseDown"
-      @mousemove="handleMouseMove"
-      @mouseup="handleMouseUp"
-      @mouseleave="handleMouseLeave"
-    />
+    <div v-else-if="data.length === 0" class="empty-state">
+      <p>暂无数据</p>
+    </div>
+
+    <template v-else>
+      <DataTable
+        :data="data"
+        :headers="headers"
+        :sort-desc="sortDesc"
+        :sort-field="sortField"
+        :get-cell-value="getCellValue"
+        :sort-by="sortBy"
+      />
+
+      <LineChart
+        v-if="showChart"
+        :mapper="mapper"
+        :data="data"
+        :field-key="selectedChartField"
+        :field-label="selectedChartFieldLabel"
+        @wheel.prevent="handleWheel"
+        @mousedown="handleMouseDown"
+        @mousemove="handleMouseMove"
+        @mouseup="handleMouseUp"
+        @mouseleave="handleMouseLeave"
+      />
+    </template>
 
     <div v-if="viewMode === 'table'" class="pagination">
       <button @click="() => setPage(currentPage - 1)" :disabled="currentPage === 1">上一页</button>
@@ -571,6 +582,36 @@ function handleMouseLeave() {
 .page-info {
   font-size: 14px;
   color: #666;
+}
+
+.loading-state,
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+  min-height: 200px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .stats {

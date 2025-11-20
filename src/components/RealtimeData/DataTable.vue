@@ -21,19 +21,24 @@ const device = ref<Device[]>([])
 const time = ref<number>(1000)
 const timer = ref<number>()
 const d_no = ref<string>()
+const loading = ref(true)
 
 // 加载数据
 async function loadData() {
-  data.value = await props.fetchData(
-    d_no.value === undefined
-      ? {}
-      : {
-          d_no: {
-            value: d_no.value,
-            operator: '=',
+  try {
+    data.value = await props.fetchData(
+      d_no.value === undefined
+        ? {}
+        : {
+            d_no: {
+              value: d_no.value,
+              operator: '=',
+            },
           },
-        },
-  )
+    )
+  } finally {
+    loading.value = false
+  }
   timer.value = setTimeout(loadData, time.value)
 }
 
@@ -67,12 +72,52 @@ onUnmounted(async () => {
         </select>
       </label>
     </div>
-    <div class="data">
+
+    <div v-if="loading && data.length === 0" class="loading-state">
+      <div class="spinner"></div>
+      <p>加载中...</p>
+    </div>
+
+    <div v-else-if="data.length === 0" class="empty-state">
+      <p>暂无实时数据</p>
+    </div>
+
+    <div v-else class="data">
       <DataCard v-for="item in data" :data="item" :mapper="mapper" :key="item.id" />
     </div>
   </div>
 </template>
 <style scoped>
+.loading-state,
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+  height: 90%;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .data {
   display: flex;
   flex-wrap: wrap;
