@@ -188,7 +188,7 @@ const table = computed(() => {
       <Transition name="fade" mode="out-in">
         <DataComp
           v-if="table.type === 'HistoryTable'"
-          :key="table.title"
+          :key="table.title + 'H'"
           :title="table.title"
           :show-chart="table.showChart"
           :fetch-mapper="table.data.fetchMapper"
@@ -199,7 +199,7 @@ const table = computed(() => {
         />
         <DataTable
           v-else-if="table.type === 'RealtimeTable'"
-          :key="table.title"
+          :key="table.title + 'R'"
           :title="table.title"
           :fetch-mapper="table.data.fetchMapper"
           :fetch-data="table.data.fetchData"
@@ -208,10 +208,10 @@ const table = computed(() => {
         />
         <DeviceData
           v-else-if="table.type === 'DeviceTable'"
-          :key="table.title"
+          :key="table.title + 'D'"
           :title="table.title"
         />
-        <SettingTable v-else-if="table.type === 'SettingTable'" :key="table.title" />
+        <SettingTable v-else-if="table.type === 'SettingTable'" :key="table.title + 'S'" />
       </Transition>
     </div>
   </div>
