@@ -46,7 +46,6 @@ const maxStr = computed(() => formatDate(props.maxTime))
 <template>
   <div class="time-range-picker">
     <div class="picker-group">
-      <label>开始时间</label>
       <input
         type="datetime-local"
         v-model="startStr"
@@ -57,7 +56,6 @@ const maxStr = computed(() => formatDate(props.maxTime))
     </div>
     <span class="separator">至</span>
     <div class="picker-group">
-      <label>结束时间</label>
       <input
         type="datetime-local"
         v-model="endStr"
@@ -117,7 +115,6 @@ input[type="datetime-local"]:focus {
 .separator {
   color: #909399;
   font-size: 14px;
-  margin-top: 18px; /* Align with input */
   font-weight: bold;
 }
 </style>
