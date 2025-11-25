@@ -22,6 +22,7 @@ const time = ref<number>(1000)
 const timer = ref<number>()
 const d_no = ref<string>()
 const loading = ref(true)
+const isUnmounted = ref(false)
 
 // 加载数据
 async function loadData() {
@@ -39,6 +40,7 @@ async function loadData() {
   } finally {
     loading.value = false
   }
+  if (isUnmounted.value) return
   timer.value = setTimeout(loadData, time.value)
 }
 
@@ -46,6 +48,7 @@ const loadMapper = async () => (mapper.value = await props.fetchMapper())
 const loadDevice = async () => (device.value = await props.fetchDevice())
 
 watch(d_no, () => {
+  clearTimeout(timer.value)
   loadData()
 })
 
@@ -56,6 +59,7 @@ onMounted(async () => {
 })
 
 onUnmounted(async () => {
+  isUnmounted.value = true
   clearTimeout(timer.value)
   timer.value = undefined
 })
