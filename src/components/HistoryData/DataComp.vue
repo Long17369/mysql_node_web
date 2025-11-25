@@ -240,17 +240,11 @@ watch(
   },
 )
 
-watch(whereDoNo, () => {
+function handleQuery() {
   currentPage.value = 1
   loadData()
   loadDataCount()
-})
-
-watch([startTime, endTime], () => {
-  currentPage.value = 1
-  loadData()
-  loadDataCount()
-})
+}
 
 // Initialize selected chart field
 watch(
@@ -352,6 +346,7 @@ function handleMouseLeave() {
             </option>
           </select>
         </label>
+        <button class="query-btn" @click="handleQuery">查询</button>
       </div>
     </div>
 
@@ -583,5 +578,20 @@ function handleMouseLeave() {
 }
 #pageSelect > li {
   list-style-type: none;
+}
+
+.query-btn {
+  padding: 6px 16px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  height: 32px;
+}
+
+.query-btn:hover {
+  background: #1565c0;
 }
 </style>
