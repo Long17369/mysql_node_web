@@ -3,7 +3,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import type { FieldMapper, Data, Device, DataCount, Where, WhereCondition } from '@/types/api'
 import LineChart from './LineChart.vue'
 import DataTable from './DataTable.vue'
-import SelectDate from '../SelectDate.vue'
+import TimeRangePicker from '../TimeRangePicker.vue'
 import '@/assets/controls.css'
 
 // 组件 Props
@@ -55,29 +55,6 @@ const startTime = ref<Date>()
 const endTime = ref<Date>()
 const minTime = ref<Date>(new Date('2020-01-01'))
 const maxTime = ref<Date>(new Date())
-
-// 最小时间字符串
-const minTimeStr = computed({
-  get: () => (minTime.value ? minTime.value.toISOString().split('T')[0] : ''),
-  set: (val: string) => (minTime.value = new Date(val)),
-})
-
-const maxTimeStr = computed({
-  get: () => (maxTime.value ? maxTime.value.toISOString().split('T')[0] : ''),
-  set: (val: string) => (maxTime.value = new Date(val)),
-})
-
-const maxStartTimeStr = computed(() => {
-  if (endTime.value === undefined || maxTime.value.getTime() < endTime.value.getTime())
-    return maxTime.value.toISOString().split('T')[0]
-  return endTime.value.toISOString().split('T')[0]
-})
-
-const minEndTimeStr = computed(() => {
-  if (startTime.value === undefined || minTime.value.getTime() > startTime.value.getTime())
-    return minTime.value.toISOString().split('T')[0]
-  return startTime.value.toISOString().split('T')[0]
-})
 
 const pageCount = computed(() => {
   return Math.ceil(dataCount.value.count / pageSize.value)
@@ -215,21 +192,6 @@ function setPage(pageNumber: number) {
   if (pageNumber > pageCount.value) return
   currentPage.value = pageNumber
   loadData()
-}
-
-const setStartTime = (time: string | undefined) => {
-  if (time) startTime.value = new Date(time)
-  else startTime.value = undefined
-}
-
-const setEndTime = (time: string | undefined) => {
-  if (time) {
-    const date = new Date(time)
-    date.setUTCHours(23, 59, 59, 999)
-    endTime.value = date
-  } else {
-    endTime.value = undefined
-  }
 }
 
 function showPage(pageNumber: number) {
@@ -375,17 +337,11 @@ function handleMouseLeave() {
     <div class="table-header">
       <h2>{{ title }}</h2>
       <div class="controls">
-        <SelectDate
-          :set-date="setStartTime"
-          title="开始时间"
-          :min-time="minTimeStr"
-          :max-time="maxStartTimeStr"
-        />
-        <SelectDate
-          :set-date="setEndTime"
-          title="结束时间"
-          :min-time="minEndTimeStr"
-          :max-time="maxTimeStr"
+        <TimeRangePicker
+          v-model:start-time="startTime"
+          v-model:end-time="endTime"
+          :min-time="minTime"
+          :max-time="maxTime"
         />
         <label>
           选择设备:
