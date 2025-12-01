@@ -10,7 +10,7 @@
 ## API 服务 (src/services/api.ts)
 
 - [ ] **添加指令相关 API**
-  - `fetchDirectConfig()`: 获取指令配置
+  - `fetchDirectConfig(d_no?: string)`: 获取指令配置 (支持传入设备号以获取过滤后的配置)
   - `fetchDirectData(d_no: string)`: 获取设备指令数据
   - `updateDirectData(data: UpdateDirectParams)`: 更新指令数据
 
@@ -26,8 +26,9 @@
     - `4`: 时间选择 (TimePicker)
     - `5`: 单选框 (Radio) - 解析 `f_value` (如 "关:off|开:on")
 - [ ] **联动逻辑**
-  - 实现 `ref_id` 和 `ref_value` 的联动显示逻辑
-  - 当关联配置的值满足条件时，才显示当前配置项
+  - (后端已处理显示过滤，前端只需渲染返回的列表)
+  - 但需注意：修改父级配置后，可能需要重新获取配置列表 (因为可见性可能改变)
 - [ ] **数据交互**
-  - 加载时获取配置和当前数据
+  - 加载时获取配置 (传入 `d_no`) 和当前数据
   - 修改控件值时调用 `updateDirectData`
+  - 修改成功后，重新获取配置列表 (刷新显示状态)
