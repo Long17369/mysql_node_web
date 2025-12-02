@@ -1,73 +1,3 @@
-<template>
-  <div class="device-control">
-    <div v-if="loading" class="loading">加载中...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
-    <div v-else class="control-list">
-      <div v-for="config in configs" :key="config.id" class="control-item">
-        <div class="control-label">
-          <i v-if="config.icon" :class="config.icon"></i>
-          {{ config.t_name }}
-        </div>
-        <div class="control-input">
-          <!-- 1: 开关 (Switch) -->
-          <el-switch
-            v-if="config.f_type === '1'"
-            v-model="model[config.id]"
-            :active-value="getSwitchValue(config.f_value, true)"
-            :inactive-value="getSwitchValue(config.f_value, false)"
-            @change="handleChange(config)"
-          />
-
-          <!-- 2: 输入框 (Input) -->
-          <el-input
-            v-else-if="config.f_type === '2'"
-            v-model="model[config.id]"
-            @change="handleChange(config)"
-          >
-            <template #append v-if="config.preffix">{{ config.preffix }}</template>
-          </el-input>
-
-          <!-- 3: 滑动条 (Slider) -->
-          <div v-else-if="config.f_type === '3'" class="slider-container">
-            <el-slider
-              v-model="model[config.id]"
-              :min="Number(config.min) || 0"
-              :max="Number(config.max) || 100"
-              show-input
-              @change="handleChange(config)"
-            />
-          </div>
-
-          <!-- 4: 时间选择 (TimePicker) -->
-          <el-time-picker
-            v-else-if="config.f_type === '4'"
-            v-model="model[config.id]"
-            value-format="HH:mm:ss"
-            @change="handleChange(config)"
-          />
-
-          <!-- 5: 单选框 (Radio) -->
-          <el-radio-group
-            v-else-if="config.f_type === '5'"
-            v-model="model[config.id]"
-            @change="handleChange(config)"
-          >
-            <el-radio
-              v-for="option in getRadioOptions(config.f_value)"
-              :key="option.value"
-              :label="option.value"
-            >
-              {{ option.label }}
-            </el-radio>
-          </el-radio-group>
-
-          <span v-else>未知类型: {{ config.f_type }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { fetchDirectConfig, fetchDirectData, updateDirectData } from '@/services/api'
@@ -183,6 +113,76 @@ watch(
   { immediate: true },
 )
 </script>
+
+<template>
+  <div class="device-control">
+    <div v-if="loading" class="loading">加载中...</div>
+    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-else class="control-list">
+      <div v-for="config in configs" :key="config.id" class="control-item">
+        <div class="control-label">
+          <i v-if="config.icon" :class="config.icon"></i>
+          {{ config.t_name }}
+        </div>
+        <div class="control-input">
+          <!-- 1: 开关 (Switch) -->
+          <el-switch
+            v-if="config.f_type === '1'"
+            v-model="model[config.id]"
+            :active-value="getSwitchValue(config.f_value, true)"
+            :inactive-value="getSwitchValue(config.f_value, false)"
+            @change="handleChange(config)"
+          />
+
+          <!-- 2: 输入框 (Input) -->
+          <el-input
+            v-else-if="config.f_type === '2'"
+            v-model="model[config.id]"
+            @change="handleChange(config)"
+          >
+            <template #append v-if="config.preffix">{{ config.preffix }}</template>
+          </el-input>
+
+          <!-- 3: 滑动条 (Slider) -->
+          <div v-else-if="config.f_type === '3'" class="slider-container">
+            <el-slider
+              v-model="model[config.id]"
+              :min="Number(config.min) || 0"
+              :max="Number(config.max) || 100"
+              show-input
+              @change="handleChange(config)"
+            />
+          </div>
+
+          <!-- 4: 时间选择 (TimePicker) -->
+          <el-time-picker
+            v-else-if="config.f_type === '4'"
+            v-model="model[config.id]"
+            value-format="HH:mm:ss"
+            @change="handleChange(config)"
+          />
+
+          <!-- 5: 单选框 (Radio) -->
+          <el-radio-group
+            v-else-if="config.f_type === '5'"
+            v-model="model[config.id]"
+            @change="handleChange(config)"
+          >
+            <el-radio
+              v-for="option in getRadioOptions(config.f_value)"
+              :key="option.value"
+              :label="option.value"
+            >
+              {{ option.label }}
+            </el-radio>
+          </el-radio-group>
+
+          <span v-else>未知类型: {{ config.f_type }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .device-control {
