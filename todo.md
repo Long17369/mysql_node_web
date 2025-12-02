@@ -16,16 +16,16 @@
 
 ## 3. 组件开发 (src/components/SettingData/)
 
-- [ ] **新建/更新设置组件**
+- [x] **新建/更新设置组件**
   - 目标组件: `SettingTable.vue` 或新建 `DeviceControl.vue`
-- [ ] **动态表单渲染**
+- [x] **动态表单渲染**
   - 根据 `DirectConfig.f_type` 渲染不同控件:
     - `1`: 开关 (Switch)
     - `2`: 输入框 (Input)
     - `3`: 滑动条 (Slider) - 使用 `min`/`max` 属性
     - `4`: 时间选择 (TimePicker)
     - `5`: 单选框 (Radio) - 解析 `f_value` (如 "关:off|开:on")
-- [ ] **数据交互与联动**
+- [x] **数据交互与联动**
   - **加载**: 获取配置 (传入 `d_no`) 和当前数据
   - **修改**: 修改控件值时调用 `updateDirectData`
   - **刷新**: 修改成功后，重新调用 `fetchDirectConfig(d_no)` 获取最新的配置列表 (因为修改可能导致其他配置项显示/隐藏)
