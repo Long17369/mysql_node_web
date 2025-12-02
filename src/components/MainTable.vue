@@ -70,8 +70,13 @@ interface SettingTable {
   type: 'SettingTable'
 }
 
+interface DeviceConfigTable {
+  title: string
+  type: 'DeviceConfigTable'
+}
+
 interface Tables {
-  [key: string]: HistoryTable | RealtimeTable | SettingTable | DeviceTable
+  [key: string]: HistoryTable | RealtimeTable | SettingTable | DeviceTable | DeviceConfigTable
 }
 
 const tables: Tables = {
@@ -178,41 +183,52 @@ const table = computed(() => {
 
 <template>
   <div class="maintable">
-    <div
-      v-if="props.activeTab === 'realtimeData' || props.activeTab === 'historyData'"
-      class="type-selector"
-    >
-      <label :class="{ active: dataType === 'sensor' }">
-        <input type="radio" v-model="dataType" value="sensor" />
-        传感器数据
-      </label>
-      <label :class="{ active: dataType === 'behavior' }">
-        <input type="radio" v-model="dataType" value="behavior" />
-        行为数据
-      </label>
-    </div>
     <div class="content-container">
       <Transition name="fade" mode="out-in">
-        <DataComp
-          v-if="table.type === 'HistoryTable'"
-          :key="table.title + 'H'"
-          :title="table.title"
-          :show-chart="table.showChart"
-          :fetch-mapper="table.data.fetchMapper"
-          :fetch-data="table.data.fetchData"
-          :fetch-device="table.data.fetchDevice"
-          :fetch-count="table.data.fetchCount"
-          :fetch-time-range="table.data.fetchTimeRange"
-        />
-        <DataTable
+        <div v-if="table.type === 'HistoryTable'" :key="table.title + 'H'" class="table-container">
+          <div class="type-selector">
+            <label :class="{ active: dataType === 'sensor' }">
+              <input type="radio" v-model="dataType" value="sensor" />
+              传感器数据
+            </label>
+            <label :class="{ active: dataType === 'behavior' }">
+              <input type="radio" v-model="dataType" value="behavior" />
+              行为数据
+            </label>
+          </div>
+          <DataComp
+            :title="table.title"
+            :show-chart="table.showChart"
+            :fetch-mapper="table.data.fetchMapper"
+            :fetch-data="table.data.fetchData"
+            :fetch-device="table.data.fetchDevice"
+            :fetch-count="table.data.fetchCount"
+            :fetch-time-range="table.data.fetchTimeRange"
+          />
+        </div>
+        <div
           v-else-if="table.type === 'RealtimeTable'"
           :key="table.title + 'R'"
-          :title="table.title"
-          :fetch-mapper="table.data.fetchMapper"
-          :fetch-data="table.data.fetchData"
-          :fetch-device="table.data.fetchDevice"
-          :fetch-count="table.data.fetchCount"
-        />
+          class="table-container"
+        >
+          <div class="type-selector">
+            <label :class="{ active: dataType === 'sensor' }">
+              <input type="radio" v-model="dataType" value="sensor" />
+              传感器数据
+            </label>
+            <label :class="{ active: dataType === 'behavior' }">
+              <input type="radio" v-model="dataType" value="behavior" />
+              行为数据
+            </label>
+          </div>
+          <DataTable
+            :title="table.title"
+            :fetch-mapper="table.data.fetchMapper"
+            :fetch-data="table.data.fetchData"
+            :fetch-device="table.data.fetchDevice"
+            :fetch-count="table.data.fetchCount"
+          />
+        </div>
         <DeviceData
           v-else-if="table.type === 'DeviceTable'"
           :key="table.title + 'D'"
@@ -296,5 +312,11 @@ const table = computed(() => {
 
 .type-selector input {
   display: none;
+}
+
+.table-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 </style>

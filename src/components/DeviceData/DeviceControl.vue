@@ -1,3 +1,119 @@
+<script setup lang="ts">
+import { ref, watch, computed } from 'vue'
+import { fetchDirectConfig, fetchDirectData, updateDirectData } from '@/services/api'
+import type { DirectConfig } from '@/types/api'
+import { ElMessage } from 'element-plus'
+
+const props = defineProps<{
+  dNo: string
+}>()
+
+let loadTimer: number = -1
+const loadingState = ref<boolean>(false)
+const loading = computed({
+  get: () => loadingState.value,
+  set: (val: boolean) => {
+    clearTimeout(loadTimer)
+    loadTimer = -1
+    if (val === false) {
+      loadingState.value = false
+    } else {
+      loadTimer = setTimeout(() => {
+        loadingState.value = val
+      }, 300)
+    }
+  },
+})
+
+const error = ref('')
+const configs = ref<DirectConfig[]>([])
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const model = ref<Record<number, any>>({})
+
+// 解析开关值 "关:off|开:on"
+const getSwitchValue = (fValue: string | null, active: boolean) => {
+  if (!fValue) return active ? 'on' : 'off'
+  const parts = fValue.split('|')
+  const target = active ? parts[1] : parts[0] // 假设格式固定为 关|开
+  if (!target) return active ? 'on' : 'off'
+  const val = target.split(':')[1]
+  return val || target
+}
+
+// 解析单选框选项 "关:off|开:on"
+const getRadioOptions = (fValue: string | null) => {
+  if (!fValue) return []
+  return fValue.split('|').map((item) => {
+    const [label, value] = item.split(':')
+    return { label, value: value || label }
+  })
+}
+
+const loadData = async () => {
+  if (!props.dNo) return
+  loading.value = true
+  error.value = ''
+  try {
+    // 并行获取配置和数据
+    const [configRes, dataRes] = await Promise.all([
+      fetchDirectConfig(props.dNo),
+      fetchDirectData(props.dNo),
+    ])
+
+    configs.value = configRes
+
+    // 初始化模型数据
+    const newModel: Record<number, any> = {}
+    // 先填入默认值或空值
+    configRes.forEach((c) => {
+      newModel[c.id] = null
+    })
+    // 填入实际数据
+    dataRes.forEach((d) => {
+      // 根据类型转换数据格式
+      const config = configRes.find((c) => c.id === d.config_id)
+      if (config && config.f_type === '3') {
+        newModel[d.config_id] = Number(d.value)
+      } else {
+        newModel[d.config_id] = d.value
+      }
+    })
+    model.value = newModel
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : '加载失败'
+  } finally {
+    clearTimeout(loadTimer)
+    loading.value = false
+  }
+}
+
+const handleChange = async (config: DirectConfig) => {
+  try {
+    const value = model.value[config.id]
+    await updateDirectData({
+      config_id: config.id,
+      value: String(value),
+      d_no: props.dNo,
+    })
+    ElMessage.success('设置成功')
+    // 更新成功后重新加载配置，因为可见性可能发生变化
+    await loadData()
+  } catch (err) {
+    ElMessage.error('设置失败: ' + (err instanceof Error ? err.message : '未知错误'))
+    // 失败回滚? 暂时重新加载
+    await loadData()
+  }
+}
+
+watch(
+  () => props.dNo,
+  () => {
+    loadData()
+  },
+  { immediate: true },
+)
+</script>
+
 <template>
   <div class="device-control">
     <div v-if="loading" class="loading">加载中...</div>
@@ -67,105 +183,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { fetchDirectConfig, fetchDirectData, updateDirectData } from '@/services/api'
-import type { DirectConfig } from '@/types/api'
-import { ElMessage } from 'element-plus'
-
-const props = defineProps<{
-  dNo: string
-}>()
-
-const loading = ref(false)
-const error = ref('')
-const configs = ref<DirectConfig[]>([])
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const model = ref<Record<number, any>>({})
-
-// 解析开关值 "关:off|开:on"
-const getSwitchValue = (fValue: string | null, active: boolean) => {
-  if (!fValue) return active ? 'on' : 'off'
-  const parts = fValue.split('|')
-  const target = active ? parts[1] : parts[0] // 假设格式固定为 关|开
-  if (!target) return active ? 'on' : 'off'
-  const val = target.split(':')[1]
-  return val || target
-}
-
-// 解析单选框选项 "关:off|开:on"
-const getRadioOptions = (fValue: string | null) => {
-  if (!fValue) return []
-  return fValue.split('|').map((item) => {
-    const [label, value] = item.split(':')
-    return { label, value: value || label }
-  })
-}
-
-const loadData = async () => {
-  if (!props.dNo) return
-  loading.value = true
-  error.value = ''
-  try {
-    // 并行获取配置和数据
-    const [configRes, dataRes] = await Promise.all([
-      fetchDirectConfig(props.dNo),
-      fetchDirectData(props.dNo),
-    ])
-
-    configs.value = configRes
-
-    // 初始化模型数据
-    const newModel: Record<number, any> = {}
-    // 先填入默认值或空值
-    configRes.forEach((c) => {
-      newModel[c.id] = null
-    })
-    // 填入实际数据
-    dataRes.forEach((d) => {
-      // 根据类型转换数据格式
-      const config = configRes.find((c) => c.id === d.config_id)
-      if (config && config.f_type === '3') {
-        newModel[d.config_id] = Number(d.value)
-      } else {
-        newModel[d.config_id] = d.value
-      }
-    })
-    model.value = newModel
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : '加载失败'
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleChange = async (config: DirectConfig) => {
-  try {
-    const value = model.value[config.id]
-    await updateDirectData({
-      config_id: config.id,
-      value: String(value),
-      d_no: props.dNo,
-    })
-    ElMessage.success('设置成功')
-    // 更新成功后重新加载配置，因为可见性可能发生变化
-    await loadData()
-  } catch (err) {
-    ElMessage.error('设置失败: ' + (err instanceof Error ? err.message : '未知错误'))
-    // 失败回滚? 暂时重新加载
-    await loadData()
-  }
-}
-
-watch(
-  () => props.dNo,
-  () => {
-    loadData()
-  },
-  { immediate: true },
-)
-</script>
 
 <style scoped>
 .device-control {
