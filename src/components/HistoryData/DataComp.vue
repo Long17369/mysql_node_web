@@ -34,7 +34,24 @@ const dataCount = ref<DataCount>({
   count: 0,
 })
 const device = ref<Device[]>([])
-const loading = ref(false)
+
+let loadTimer: number = -1
+const loadingState = ref<boolean>(false)
+const loading = computed({
+  get: () => loadingState.value,
+  set: (val: boolean) => {
+    clearTimeout(loadTimer)
+    loadTimer = -1
+    if (val === false) {
+      loadingState.value = false
+    } else {
+      loadTimer = setTimeout(() => {
+        loadingState.value = val
+      }, 300)
+    }
+  },
+})
+
 const error = ref<string | null>(null)
 
 // 分页和排序状态
@@ -154,6 +171,7 @@ async function loadData() {
   } catch (e) {
     error.value = '加载数据失败: ' + (e as Error).message
   } finally {
+    clearTimeout(loadTimer)
     loading.value = false
   }
 }

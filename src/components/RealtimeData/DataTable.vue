@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Data, DataCount, Device, FieldMapper, Where } from '@/types/api'
 import DataCard from './DataCard.vue'
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 // 组件 Props
 interface Props {
@@ -21,7 +21,24 @@ const device = ref<Device[]>([])
 const time = ref<number>(1000)
 const timer = ref<number>()
 const d_no = ref<string>()
-const loading = ref(true)
+
+let loadTimer: number = -1
+const loadingState = ref<boolean>(false)
+const loading = computed({
+  get: () => loadingState.value,
+  set: (val: boolean) => {
+    clearTimeout(loadTimer)
+    loadTimer = -1
+    if (val === false) {
+      loadingState.value = false
+    } else {
+      loadTimer = setTimeout(() => {
+        loadingState.value = val
+      }, 300)
+    }
+  },
+})
+
 const isUnmounted = ref(false)
 
 // 加载数据
@@ -38,6 +55,7 @@ async function loadData() {
           },
     )
   } finally {
+    clearTimeout(loadTimer)
     loading.value = false
   }
   if (isUnmounted.value) return

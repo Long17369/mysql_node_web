@@ -9,7 +9,7 @@ interface Props {
   title: string
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 // 表头接口
 interface Header {
