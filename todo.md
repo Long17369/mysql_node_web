@@ -2,14 +2,14 @@
 
 ## 1. 类型定义 (src/types/api.ts)
 
-- [ ] **同步后端类型**
+- [x] **同步后端类型**
   - 添加 `DirectConfig` 接口
   - 添加 `Direct` 接口
   - 添加 `UpdateDirectParams` 接口
 
 ## 2. API 服务 (src/services/api.ts)
 
-- [ ] **添加指令相关 API**
+- [x] **添加指令相关 API**
   - `fetchDirectData(d_no: string)`: 获取设备指令数据
   - `updateDirectData(data: UpdateDirectParams)`: 更新指令数据
   - `fetchDirectConfig(d_no?: string)`: 获取指令配置 (支持传入设备号以获取过滤后的配置)

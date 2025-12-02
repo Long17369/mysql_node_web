@@ -30,17 +30,16 @@ const parseDate = (value: string) => {
 
 const startStr = computed({
   get: () => formatDate(props.startTime),
-  set: (val) => emit('update:startTime', parseDate(val))
+  set: (val) => emit('update:startTime', parseDate(val)),
 })
 
 const endStr = computed({
   get: () => formatDate(props.endTime),
-  set: (val) => emit('update:endTime', parseDate(val))
+  set: (val) => emit('update:endTime', parseDate(val)),
 })
 
 const minStr = computed(() => formatDate(props.minTime))
 const maxStr = computed(() => formatDate(props.maxTime))
-
 </script>
 
 <template>
@@ -91,7 +90,7 @@ const maxStr = computed(() => formatDate(props.maxTime))
   font-weight: 500;
 }
 
-input[type="datetime-local"] {
+input[type='datetime-local'] {
   border: 1px solid #dcdfe6;
   border-radius: 4px;
   padding: 6px 8px;
@@ -103,11 +102,11 @@ input[type="datetime-local"] {
   background-color: white;
 }
 
-input[type="datetime-local"]:hover {
+input[type='datetime-local']:hover {
   border-color: #c0c4cc;
 }
 
-input[type="datetime-local"]:focus {
+input[type='datetime-local']:focus {
   border-color: #409eff;
   box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
 }
