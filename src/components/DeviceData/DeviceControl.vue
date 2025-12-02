@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { fetchDirectConfig, fetchDirectData, updateDirectData } from '@/services/api'
 import type { DirectConfig } from '@/types/api'
 import { ElMessage } from 'element-plus'
@@ -78,7 +78,23 @@ const props = defineProps<{
   dNo: string
 }>()
 
-const loading = ref(false)
+let loadTimer: number = -1
+const loadingState = ref<boolean>(false)
+const loading = computed({
+  get: () => loadingState.value,
+  set: (val: boolean) => {
+    clearTimeout(loadTimer)
+    loadTimer = -1
+    if (val === false) {
+      loadingState.value = false
+    } else {
+      loadTimer = setTimeout(() => {
+        loadingState.value = val
+      }, 300)
+    }
+  },
+})
+
 const error = ref('')
 const configs = ref<DirectConfig[]>([])
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -136,6 +152,7 @@ const loadData = async () => {
   } catch (err) {
     error.value = err instanceof Error ? err.message : '加载失败'
   } finally {
+    clearTimeout(loadTimer)
     loading.value = false
   }
 }
