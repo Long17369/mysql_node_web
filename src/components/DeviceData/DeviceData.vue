@@ -9,7 +9,7 @@ interface Props {
   title: string
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 // 表头接口
 interface Header {
@@ -290,6 +290,10 @@ tbody tr:hover {
   padding: 20px;
   border-radius: 8px;
   width: 400px;
+}
+.settings-modal {
+  width: 600px;
+  max-width: 90vw;
 }
 .form-item {
   margin-bottom: 15px;

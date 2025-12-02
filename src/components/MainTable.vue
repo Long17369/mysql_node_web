@@ -20,6 +20,7 @@ import DataComp from './HistoryData/DataComp.vue'
 import DataTable from './RealtimeData/DataTable.vue'
 import SettingTable from './SettingData/SettingTable.vue'
 import DeviceData from './DeviceData/DeviceData.vue'
+import DeviceConfig from './DeviceConfig/DeviceConfig.vue'
 
 // 历史数据接口
 interface HistoryData {
@@ -148,10 +149,16 @@ const tables: Tables = {
     title: '设置',
     type: 'SettingTable',
   },
+  deviceConfig: {
+    title: '设备配置',
+    type: 'DeviceConfigTable',
+  },
 }
 
 interface Props {
   activeTab: string
+  currentDeviceNo: string
+  setActiveTab: (tab: string, dNo?: string) => void
 }
 
 const props = defineProps<Props>()
@@ -212,6 +219,11 @@ const table = computed(() => {
           :title="table.title"
         />
         <SettingTable v-else-if="table.type === 'SettingTable'" :key="table.title + 'S'" />
+        <DeviceConfig
+          v-else-if="table.type === 'DeviceConfigTable'"
+          :key="table.title + 'C'"
+          :d-no="props.currentDeviceNo"
+        />
       </Transition>
     </div>
   </div>
@@ -227,7 +239,7 @@ const table = computed(() => {
 }
 
 .content-container {
-  flex: 1;
+  height: 100vh;
   overflow: hidden;
   position: relative;
 }
