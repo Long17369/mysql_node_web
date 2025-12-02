@@ -38,6 +38,7 @@ const menuItems = ref<(MenuItem | SubMenuItem)[]>([
     ],
   },
   { type: 'SubMenuItem', title: '设备管理', value: 'deviceManger' },
+  { type: 'SubMenuItem', title: '设备配置', value: 'deviceConfig' },
   { type: 'SubMenuItem', title: '设置', value: 'setting' },
 ])
 

@@ -90,3 +90,35 @@ export interface DataQueryParams {
 export type MapperResponse = ApiResponse<FieldMapper[]>
 export type DataResponse = ApiResponse<Data[]>
 export type DataCountResponse = ApiResponse<number>
+
+// 指令配置类型
+export interface DirectConfig {
+  id: number
+  ref_id: number | null // 关联的指令配置Id
+  ref_value: string | null // 关联的指令配置值, 如果配置的Id的值与此处吻合, 显示该指令配置
+  t_name: string // 指令名称
+  f_type: string // 前端类型。1：开关按钮；2：输入框；3：滑动按钮；4：时间框；5：单选框
+  f_value: string | null // 指令值；输入框：不配置；单选框：具体的值；滑动按钮：取值范围
+  mode: string | null // 模式。1=全局指令
+  max: string | null
+  min: string | null
+  order: string | null // 排序
+  topic: string | null // 指令对应的主题
+  preffix: string | null // 前缀
+  icon: string | null // 图标库中的安全证书图标符号
+}
+
+// 指令类型
+export interface Direct {
+  id: number
+  config_id: number
+  value: string | null
+  d_no: string
+}
+
+// 更新指令参数
+export interface UpdateDirectParams {
+  config_id: number
+  value: string
+  d_no: string
+}

@@ -6,18 +6,27 @@ import MainTable from './components/MainTable.vue'
 
 // 当前激活的标签页
 const activeTab = ref<string>('sensorRealtime')
+// 当前选中的设备编号 (用于设备配置页面)
+const currentDeviceNo = ref<string>('')
 
 // 设置激活的标签页
-function setActiveTab(value: string) {
-  console.log(value)
+function setActiveTab(value: string, dNo?: string) {
+  console.log(value, dNo)
   activeTab.value = value
+  if (dNo) {
+    currentDeviceNo.value = dNo
+  }
 }
 </script>
 
 <template>
   <div class="app">
-    <MainMenu :set-active-tab="setActiveTab" />
-    <MainTable :active-tab="activeTab" />
+    <MainMenu :set-active-tab="(val) => setActiveTab(val)" />
+    <MainTable
+      :active-tab="activeTab"
+      :current-device-no="currentDeviceNo"
+      :set-active-tab="setActiveTab"
+    />
   </div>
 </template>
 

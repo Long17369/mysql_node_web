@@ -7,6 +7,9 @@ import type {
   DataCount,
   CreateDeviceParams,
   UpdateDeviceParams,
+  DirectConfig,
+  Direct,
+  UpdateDirectParams,
 } from '@/types/api'
 
 const BASE_URL = '/api'
@@ -201,3 +204,32 @@ export async function getErrorTimeRange(where: object = {}) {
  * @returns Promise<FieldMapper[]>
  */
 export const getErrorFieldMapper = () => fetchApi<FieldMapper[]>(`${BASE_URL}/error/table`)
+
+/**
+ * 获取指令配置
+ * @param d_no 设备编号 (可选)
+ */
+export const fetchDirectConfig = (d_no?: string) => {
+  const queryString = d_no ? `?d_no=${d_no}` : ''
+  return fetchApi<DirectConfig[]>(`${BASE_URL}/direct/config${queryString}`)
+}
+
+/**
+ * 获取指令数据
+ * @param d_no 设备编号
+ */
+export const fetchDirectData = (d_no: string) => {
+  return fetchApi<Direct[]>(`${BASE_URL}/direct/data?d_no=${d_no}`)
+}
+
+/**
+ * 更新指令数据
+ * @param data 更新参数
+ */
+export const updateDirectData = (data: UpdateDirectParams) => {
+  return fetchApi(`${BASE_URL}/direct/update`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+}
